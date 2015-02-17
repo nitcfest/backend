@@ -17,8 +17,8 @@ class AddEventsTable extends Migration {
 		    $table->increments('id');
 		    $table->string('event_code', 10)->unique();
 
-		   	$table->integer('category')->unsigned();
-		   	$table->foreign('category')->references('id')->on('event_categories');
+		   	$table->integer('category_id')->unsigned();
+		   	$table->foreign('category_id')->references('id')->on('event_categories');
 
 		   	$table->string('name', 100);
 

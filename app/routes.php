@@ -31,14 +31,27 @@ Route::get('/', function()
 	return Redirect::away(Config::get('app.homepage'));
 });
 
-Route::get('/api', function()
-{
-	return Response::json(array('status'=>'active'));
-});
+
+Route::group(array(
+	'prefix' => 'api'
+	), function(){
+	    Route::get('/', array(
+	    	'uses'=> 'ApiController@index'
+	    	));
+
+	    Route::get('events', array(
+	    	'as'=>'events', 
+	    	'uses'=> 'ApiController@events'
+	    	));
 
 
+	    Route::get('event/{code}', array(
+	    	'as'=>'event', 
+	    	'uses'=> 'ApiController@event'
+	    	));
 
-
+	}
+);
 
 
 

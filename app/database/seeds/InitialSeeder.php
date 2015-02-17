@@ -19,9 +19,13 @@ class InitialSeeder extends Seeder {
 
         DB::table('event_categories')->truncate();
         $event_categories = array(
-            ['name' => 'Events'],
-            ['name' => 'Workshops'],
-            ['name' => 'Proshows'],
+            ['name' => 'Events', 'parent_id' => 0],
+            ['name' => 'Workshops', 'parent_id' => 0],
+            ['name' => 'Proshows', 'parent_id' => 0],
+
+            ['name' => 'General', 'parent_id' => 1],
+            ['name' => 'Literay', 'parent_id' => 1],
+            ['name' => 'Dance', 'parent_id' => 1],
         );
         DB::table('event_categories')->insert($event_categories);
 
@@ -29,7 +33,7 @@ class InitialSeeder extends Seeder {
         DB::table('events')->truncate();
         $event = array(
             'event_code' => 'XYZ',
-            'category' => 1,
+            'category_id' => 4,
             'name' => 'Sample Event',
             'tags' => 'dolor sit amet',
             'short_description' => 'This is a short short description of a sample event.',
