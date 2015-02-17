@@ -4,7 +4,7 @@ Please add suggestions, ideas. Feel free to edit.
 
 Public API
 ==========
-Base URL: http://www.ragam.org.in
+Base URL: http://www.ragam.org.in/2015/cms
 Prefix: /api/
 
 If no method specified ==> GET

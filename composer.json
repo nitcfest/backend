@@ -5,7 +5,8 @@
 	"license": "MIT",
 	"type": "project",
 	"require": {
-		"laravel/framework": "4.2.*"
+		"laravel/framework": "4.2.*",
+		"ollieread/multiauth": "3.3.*"
 	},
 	"autoload": {
 		"classmap": [

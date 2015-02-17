@@ -33,26 +33,46 @@ App::after(function($request, $response)
 |
 */
 
-Route::filter('auth', function()
+Route::filter('auth.manager', function()
 {
-	if (Auth::guest())
+	if (Auth::manager()->guest())
 	{
 		if (Request::ajax())
 		{
 			return Response::make('Unauthorized', 401);
 		}
-		else
-		{
-			return Redirect::guest('login');
-		}
+		return Redirect::guest('/manage/login');
 	}
 });
 
 
-Route::filter('auth.basic', function()
+
+Route::filter('auth.manager.basic', function()
 {
-	return Auth::basic();
+	return Auth::manager()->basic();
 });
+
+
+
+Route::filter('auth.user', function()
+{
+	if (Auth::user()->guest())
+	{
+		if (Request::ajax())
+		{
+			return Response::make('Unauthorized', 401);
+		}
+		return Redirect::away('http://www.example.com/login');
+	}
+});
+
+
+
+Route::filter('auth.user.basic', function()
+{
+	return Auth::manager()->basic();
+});
+
 
 /*
 |--------------------------------------------------------------------------

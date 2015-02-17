@@ -15,7 +15,7 @@ return array(
 	|
 	*/
 
-	'driver' => 'eloquent',
+	// 'driver' => 'eloquent',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,7 +28,7 @@ return array(
 	|
 	*/
 
-	'model' => 'User',
+	// 'model' => 'User',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -41,7 +41,23 @@ return array(
 	|
 	*/
 
-	'table' => 'users',
+	// 'table' => 'users',
+
+
+
+
+	// For multi user
+	'multi' => array(
+		'manager' => array(
+			'driver' => 'eloquent',
+			'model' => 'Manager'
+			),
+		'user' => array(
+			'driver' => 'eloquent',
+			'model' => 'Registration'
+			)
+	),
+
 
 	/*
 	|--------------------------------------------------------------------------
