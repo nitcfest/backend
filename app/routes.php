@@ -40,15 +40,28 @@ Route::group(array(
 	    	));
 
 	    Route::get('events', array(
-	    	'as'=>'events', 
 	    	'uses'=> 'ApiController@events'
 	    	));
 
 
 	    Route::get('event/{code}', array(
-	    	'as'=>'event', 
 	    	'uses'=> 'ApiController@event'
 	    	));
+
+
+	    Route::get('user', array(
+	    	'uses' => 'ApiController@user'
+	    	));
+
+	    Route::post('user/login', array(
+	    	'uses' => 'ApiController@postUserLogin'
+	    	));
+
+	    Route::get('user/logout', array(
+	    	'uses' => 'ApiController@userLogout'
+	    	));
+
+	    
 
 	}
 );
