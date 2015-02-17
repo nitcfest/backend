@@ -15,3 +15,8 @@ Route::get('/', function()
 {
 	return Response::json(array('status'=>'active'));
 });
+
+Route::get('/admin-api', array('before'=>'auth', function()
+{
+	return Response::json(array('status'=>'active'));
+}));

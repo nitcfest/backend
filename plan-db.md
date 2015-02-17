@@ -22,9 +22,15 @@ Managers
 	validate
 
 
+Event Categories
+	id
+	parent_id => 0 for parents
+	name
+
+
 Events
 	id
-	code
+	event_code
 	category -> references categories table
 		workshops
 		proshows
@@ -46,17 +52,13 @@ Events
 	long_description
 	validated ==> boolean
 
-Event Categories
-	id
-	parent_id => 0 for parents
-	name
 
 Colleges
 	id
 	name
 	validated ==> boolean
 
-Student Accounts
+Registrations
 	id => Start from 10001
 	email ==> unique
 	password
@@ -74,15 +76,15 @@ Student Accounts
 
 Teams
 	id
-	event_id
+	event_code
 	team_code
-	student_id //Owner
+	registration_id //Owner
 	added_at
 
 Team Members
 	id
+	team_id
 	registration_id
-	student_id
 
 
 
