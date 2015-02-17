@@ -62,17 +62,15 @@ Route::filter('auth.user', function()
 		{
 			return Response::make('Unauthorized', 401);
 		}
-		return Redirect::away('http://www.example.com/login');
+		return Redirect::away(Config::get('app.homepage'));
 	}
 });
 
 
-
 Route::filter('auth.user.basic', function()
 {
-	return Auth::manager()->basic();
+	return Auth::user()->basic();
 });
-
 
 /*
 |--------------------------------------------------------------------------

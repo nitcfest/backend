@@ -23,6 +23,7 @@ class AddManagersTable extends Migration {
 		    $table->string('event_code', 10)->nullable();
 		    $table->boolean('validated')->default(false);
 
+		    $table->rememberToken();
 		    $table->timestamps();
 		});
 	}

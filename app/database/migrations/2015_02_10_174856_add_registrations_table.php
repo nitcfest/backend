@@ -15,14 +15,16 @@ class AddRegistrationsTable extends Migration {
 		Schema::create('registrations', function($table)
 		{	
 		    $table->increments('id');
-		    $table->string('email', 50)->unique();
-		    $table->string('password');
+		    $table->bigInteger('fb_uid')->nullable();
+
+		    $table->string('email', 50)->unique()->nullable();
+		    $table->string('password')->nullable();
 		    
-		    $table->string('name', 100);
-		    $table->string('phone', 100);
+		    $table->string('name', 100)->nullable();
+		    $table->string('phone', 100)->nullable();
 		    
-		    $table->integer('college')->unsigned();
-		    $table->foreign('college')->references('id')->on('colleges');
+		    $table->integer('college_id')->unsigned()->nullable();
+		    $table->foreign('college_id')->references('id')->on('colleges');
 
 		    $table->integer('runtime_id')->nullable();
 		    $table->boolean('payment_done')->default(false);
@@ -31,6 +33,7 @@ class AddRegistrationsTable extends Migration {
 
 		    $table->string('notes', 1000)->nullable();
 
+		    $table->rememberToken();
 		    $table->timestamps();
 		});
 

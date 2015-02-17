@@ -54,28 +54,26 @@ Route::group(array(
 	    	));
 
 	    Route::post('user/login', array(
-	    	'uses' => 'ApiController@postUserLogin'
+	    	'uses' => 'ApiController@userPostLogin'
 	    	));
 
 	    Route::get('user/logout', array(
 	    	'uses' => 'ApiController@userLogout'
 	    	));
 
-	    
+	    Route::get('user/fb_login', array(
+	    	'uses' => 'ApiController@userFbLogin'
+	    	));
+
 
 	}
 );
 
 
 
-// Route::get('/admin-api', array('before'=>'auth.manager', function()
-// {
-// 	return Response::json(array('status'=>'active'));
-// }));
-
-
-// Route::get('/user', array('before'=>'auth.manager', function()
-// {
-// 	return Response::json(array('status'=>'active'));
-// }));
+Route::get('/user', array('before'=>'auth.user', function()
+{
+	echo 'shit';
+	// return Auth::user()->get();
+}));
 

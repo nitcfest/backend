@@ -65,7 +65,7 @@ class InitialSeeder extends Seeder {
             'password' => Hash::make('nimda'),
             'name' => 'John Doe',
             'phone' => '9995552233',
-            'college' => 1,
+            'college_id' => 1,
             'created_at' => date("Y-m-d G:i:s"),
             'updated_at' => date("Y-m-d G:i:s"),
         );

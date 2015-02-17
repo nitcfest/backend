@@ -137,6 +137,11 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 
+		//OAuth for FB login
+		'Artdarek\OAuth\OAuthServiceProvider',
+
+
+
 	),
 
 	/*
@@ -203,6 +208,9 @@ return array(
 		'URL'               => 'Illuminate\Support\Facades\URL',
 		'Validator'         => 'Illuminate\Support\Facades\Validator',
 		'View'              => 'Illuminate\Support\Facades\View',
+
+		//OAuth for FB login
+		'OAuth' => 'Artdarek\OAuth\Facade\OAuth',
 
 	),
 

@@ -21,6 +21,11 @@ class Registration extends Eloquent implements UserInterface, RemindableInterfac
 	 *
 	 * @var array
 	 */
-	protected $hidden = array('password');
+	protected $hidden = array('password','remember_token');
+
+
+	public function college(){
+		return $this->belongsTo('College')->select('id', 'name');
+	}
 
 }
