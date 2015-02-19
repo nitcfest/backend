@@ -1,6 +1,3 @@
-/**
- * Note: This file is a modified copy of bootstrap3-wysihtml5/src/bootstrap3-wysihtml5.js
- */
 
 !function($, wysi) {
 	"use strict";
@@ -50,7 +47,7 @@
 		"link": function(locale, options) {
 			var size = (options && options.size) ? ' btn-'+options.size : '';
 			return "<li>" +
-			  "<div id='bootstrap-wysihtml5-insert-link-modal' class='bootstrap-wysihtml5-insert-link-modal modal fade' role='dialog'>" +
+			  "<div id='bootstrap-wysihtml5-insert-link-modal_"+ defaultOptions.instance +"' class='bootstrap-wysihtml5-insert-link-modal modal fade' role='dialog'>" +
 				"<div class='modal-dialog'>" +
 					"<div class='modal-content'>" +
 						"<div class='modal-header'>" +
@@ -68,14 +65,14 @@
 					 "</div>" +
 				 "</div>" +
 			  "</div>" +
-			  "<a data-toggle='modal' href='#bootstrap-wysihtml5-insert-link-modal' class='btn btn-default" + size + "' data-wysihtml5-command='createLink' title='" + locale.link.insert + "' tabindex='-1a'><i class='glyphicon glyphicon-link'></i></a>" +
+			  "<a data-toggle='modal' href='#bootstrap-wysihtml5-insert-link-modal_"+ defaultOptions.instance +"' class='btn btn-default" + size + "' data-wysihtml5-command='createLink' title='" + locale.link.insert + "' tabindex='-1a'><i class='glyphicon glyphicon-link'></i></a>" +
 			"</li>";
 		},
 
 		"image": function(locale, options) {
 			var size = (options && options.size) ? ' btn-'+options.size : '';
 			return "<li>" +
-			  '<div id="bootstrap-wysihtml5-insert-image-modal" class="bootstrap-wysihtml5-insert-image-modal modal fade">' +
+			  '<div id="bootstrap-wysihtml5-insert-image-modal_'+ defaultOptions.instance +'" class="bootstrap-wysihtml5-insert-image-modal modal fade">' +
 				'<div class="modal-dialog">' +
 					'<div class="modal-content">' +
 						'<div class="modal-header">' +
@@ -87,14 +84,14 @@
 								'<span class="btn btn-primary fileinput-button">' +
 									'<i class="glyphicon glyphicon-plus"></i> ' +
 									'<span>Select files…</span>' +
-									'<input id="fileupload" type="file" name="image" data-url="upload_image">' +
+									'<input id="fileupload_'+ defaultOptions.instance +'" type="file" name="image" data-url="upload_image">' +
 								'</span>' +
 							'</p>' +
-							'<div id="progress" class="progress progress-striped">' +
+							'<div id="progress_'+ defaultOptions.instance +'" class="progress progress-striped">' +
 								'<div class="progress-bar"></div>' +
 							'</div>' +
-							'<div id="filealerts" class="filealerts"></div>' +
-							'<ul id="files" class="files"></ul>' +
+							'<div id="filealerts_'+ defaultOptions.instance +'" class="filealerts"></div>' +
+							'<ul id="files_'+ defaultOptions.instance +'" class="files"></ul>' +
 						'</div>' +
 						'<div class="modal-footer">' +
 						  '<a href="#" class="btn btn-default" data-dismiss="modal">' + locale.image.cancel + '</a>' +
@@ -103,7 +100,7 @@
 					'</div>' +
 				'</div>' +
 			  '</div>' +
-			  '<a data-toggle="modal" href="#bootstrap-wysihtml5-insert-image-modal" class="btn btn-default' + size + '" data-wysihtml5-command="insertImage" title="' + locale.image.insert + '" tabindex="-1"><i class="glyphicon glyphicon-picture"></i></a>' +
+			  '<a data-toggle="modal" href="#bootstrap-wysihtml5-insert-image-modal_'+ defaultOptions.instance +'" class="btn btn-default' + size + '" data-wysihtml5-command="insertImage" title="' + locale.image.insert + '" tabindex="-1"><i class="glyphicon glyphicon-picture"></i></a>' +
 			'</li>';
 		},
 
@@ -145,6 +142,9 @@
 
 
 	var Wysihtml5 = function(el, options) {
+		defaultOptions.instance = options.instance;
+
+
 		this.el = el;
 		var toolbarOpts = options || defaultOptions;
 		for(var t in toolbarOpts.customTemplates) {
@@ -265,7 +265,7 @@
 				}
 
 				// Find all image URLs
-				$('#files img').each(function() {
+				$('#files_'+ defaultOptions.instance +' img').each(function() {
 					var url = $(this).data('url');
 					if (url) {
 						self.editor.composer.commands.exec("insertImage", url);
@@ -295,16 +295,16 @@
 					});
 
 					// Remove previously uploaded images from list
-					$('#files,#filealerts').empty();
+					$('#files_'+ defaultOptions.instance +', #filealerts_'+ defaultOptions.instance).empty();
 
 					// Reset progress bar
-					$('#progress .progress-bar').css('width', '0');
+					$('#progress_'+ defaultOptions.instance +' .progress-bar').css('width', '0');
 
 					// Function to update status of "insert" button
 					var updateInsertBtn = function () {
 						var imgCount = 0;
 
-						$('#files img').each(function() {
+						$('#files_'+ defaultOptions.instance +' img').each(function() {
 							var url = $(this).data('url');
 							if (url) {
 								imgCount++;
@@ -326,13 +326,13 @@
 					updateInsertBtn();
 
 					// Init file upload
-					$('#fileupload').fileupload({
+					$('#fileupload_'+ defaultOptions.instance).fileupload({
 						dataType: 'json',
 						always: function (e, data) {
 							if (data.hasOwnProperty('result')) {
 								$.each(data.result.files, function (index, file) {
 									if (file.hasOwnProperty('error')) {
-										$('#filealerts').append($('<div class="alert alert-danger"></div>').text('The file “' + file.name + '” could not be stored (' + file.error + ').'));
+										$('#filealerts_'+ defaultOptions.instance).append($('<div class="alert alert-danger"></div>').text('The file “' + file.name + '” could not be stored (' + file.error + ').'));
 									} else {
 										var newimg = $('<img/>').attr('src', file.thumbnailUrl).data('url', file.url).attr('class', 'img-thumbnail');
 										var removebtn = $('<button type="button" class="close">×</button>').click(function() {
@@ -340,22 +340,22 @@
 											updateInsertBtn();
 										});
 										var li = $('<li/>').append(removebtn).append(newimg);
-										$('#files').prepend(li);
+										$('#files_'+ defaultOptions.instance).prepend(li);
 										updateInsertBtn();
 									}
 								});
 							} else {
-								$('#filealerts').append($('<div class="alert alert-danger">Upload failed. Try again!</div>'));
+								$('#filealerts_'+ defaultOptions.instance).append($('<div class="alert alert-danger">Upload failed. Try again!</div>'));
 							}
 						},
 						progressall: function (e, data) {
 							var progress = Math.round(data.loaded / data.total * 100);
 							if (progress < 100) {
-								$('#progress').addClass('progress-striped active');
+								$('#progress_'+ defaultOptions.instance).addClass('progress-striped active');
 							} else {
-								$('#progress').removeClass('progress-striped active');
+								$('#progress_'+ defaultOptions.instance).removeClass('progress-striped active');
 							}
-							$('#progress .progress-bar').css('width', progress + '%');
+							$('#progress_'+ defaultOptions.instance +' .progress-bar').css('width', progress + '%');
 						}
 					}).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
 
@@ -477,6 +477,7 @@
 		"html": false,
 		"link": true,
 		"image": true,
+		"instance": 1,
 		events: {},
 		parserRules: {
 			classes: {

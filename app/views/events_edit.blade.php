@@ -117,11 +117,12 @@ Edit Event
                             </div>
                         </div>  
 
+                        <!-- THIS IS A HIDDEN FEATURE :P
                         <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default">Move Up <span class="glyphicon glyphicon-chevron-up"></span></button>
-                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-chevron-down"></span> Move Down</button>
+                            <button type="button" class="btn btn-default btn-section-move-up">Move Up <span class="glyphicon glyphicon-chevron-up"></span></button>
+                            <button type="button" class="btn btn-default btn-section-move-down"><span class="glyphicon glyphicon-chevron-down"></span> Move Down</button>
                         </div>
-                        <div class="clearfix"></div>
+                        <div class="clearfix"></div> -->
                     </div>
                 </div>
             </div>
@@ -144,7 +145,6 @@ Edit Event
 <script src="{{URL::to('/')}}/bower_components/blueimp-jquery-file-upload/jquery.fileupload.js"></script>
 
 <script src="{{URL::to('/')}}/bower_components/bootstrap3-wysiwyg/wysihtml5-image-upload.js"></script>
-
 
 
 <script>
@@ -170,7 +170,7 @@ Edit Event
                 "image": true, //Button to insert an image. Default true,
                 "color": false, //Button to change color of font  
                 "blockquote": false, //Blockquote  
-
+                "instance": 1,
                 "events": {
                         "load": function() { 
                             $('.wysihtml5-toolbar').find('.glyphicon-indent-right, .glyphicon-indent-left').parents('a').hide();
@@ -188,8 +188,9 @@ Edit Event
             block.find('.section-title').val('');
             block.find('.editor-container').html('<textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;"></textarea>');
             block.appendTo('#section-block-container');
-            $('.section-block').last().find('.section-editor-textarea').wysihtml5(editor_settings);
+            editor_settings.instance+=1;
 
+            $('.section-block').last().find('.section-editor-textarea').wysihtml5(editor_settings);
             $('.section-block').last().scrollTo();
         });
 
@@ -201,6 +202,32 @@ Edit Event
                 $('.section-block').last().scrollTo();
             }
         });
+
+        $('#section-block-container').on('click', '.btn-section-move-up', function(event) {
+            event.preventDefault();
+
+            var current_parent = $(this).parents('.section-block');
+
+            var position = $('.section-block').index(current_parent);
+
+            if(position > 0){
+                $('.section-block').eq(position-1).insertAfter($('.section-block').eq(position));               
+            }
+        });
+
+        $('#section-block-container').on('click', '.btn-section-move-down', function(event) {
+            event.preventDefault();
+
+            var current_parent = $(this).parents('.section-block');
+
+            var position = $('.section-block').index(current_parent);
+            var last = $('.section-block').index($('.section-block').last());
+
+            if(position < last){
+                $('.section-block').eq(position+1).insertBefore($('.section-block').eq(position));
+            }
+        });
+
 
 
 
