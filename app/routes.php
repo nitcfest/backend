@@ -124,6 +124,16 @@ Route::group(array(
 	    Route::get('events/{id}', array(
 	    	'as' => 'action_edit_event',
 	    	'uses'=> 'ManageController@eventsEdit'
+	    	))->where('id','[0-9]+');
+
+	    Route::post('events/upload_image', array(
+	    	'as' => 'action_upload_image',
+	    	'uses'=> 'ManageController@eventsUploadImage'
+	    	));
+
+	    Route::get('events/upload_image', array(
+	    	'as' => 'action_upload_image',
+	    	'uses'=> 'ManageController@eventsUploadImage'
 	    	));
 	}
 );

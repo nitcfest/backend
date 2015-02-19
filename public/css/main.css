@@ -8,20 +8,6 @@ body {
     background-color: #f8f8f8;
 }
 
-/* For loading animation*/
-#ajax-loading{
-    display:    none;
-    position:   fixed;
-    z-index:    10000;
-    top:        0;
-    left:       0;
-    height:     100%;
-    width:      100%;
-    background: rgba(255, 255, 255, .5) 
-                url('../img/loading.gif') 
-                50% 50% 
-                no-repeat;
-}
 
 /* Prevent scroll when loading*/
 body.loading {

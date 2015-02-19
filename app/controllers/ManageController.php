@@ -130,6 +130,106 @@ class ManageController extends BaseController {
 		return 'yo';
 	}
 
+	public function eventsUploadImage(){
+		//Function to upload images to public/images/ folder.
+		$upload_path = public_path().'/images/';
+		$event_code = Input::get('event_code','ZZZ');
+
+		if (Input::hasFile('image'))
+		{
+			$file = Input::file('image');
+			$size = $file->getSize();
+			$filename = $file->getClientOriginalName();
+
+			if ($file->isValid())
+			{
+				$extension = $file->getClientOriginalExtension();
+				$mime = $file->getMimeType();
+				$size = $file->getSize();
+
+				if(!in_array($extension, ['gif','jpg','png','jpeg']) || !in_array($mime, ['image/gif','image/jpeg','image/pjpeg','image/png'])){
+					//Not an image?
+					return Response::json([
+						'files'=>[
+								[
+									'name'=>$filename,
+									'size'=>$size,
+									'error'=>'Invalid image uploaded.'
+								]
+							]
+
+						]);
+				}
+
+				if($size> 5*1024*1024){ //5MB Maximum
+					return Response::json([
+						'files'=>[
+								[
+									'name'=>$filename,
+									'size'=>$size,
+									'error'=>'File too large(>5MB). Try a smaller image.'
+								]
+							]
+
+						]);
+				}
+
+				list($width, $height) = getimagesize($file->getRealPath());
+
+				if($width>900){
+					return Response::json([
+						'files'=>[
+								[
+									'name'=>$filename,
+									'size'=>$size,
+									'error'=>'Try a smaller image. Maximum width is 900 pixels.'
+								]
+							]
+
+						]);
+				}				
+
+
+				$new_filename = $event_code.'_1';
+				if(file_exists($upload_path.$new_filename.".".$extension)){
+					$i=1;
+					while(file_exists($upload_path.$new_filename.".".$extension)){
+						//Files names are like ABC.jpg, ABC_2.jpg etc.
+						$i++;						
+						$new_filename = $event_code.'_'.$i;
+					}
+				}
+
+				//Now we have a useable filename for the newly uploaded image.
+				$file->move($upload_path, $new_filename.".".$extension);
+				$public_url = Config::get('app.url').'/images/'.$new_filename.".".$extension;
+				return Response::json([
+					'files'=>[
+							[
+								'name'=>$filename,
+								'size'=>$size,
+								'thumbnailUrl'=> $public_url,
+								'url'=> $public_url,
+							]
+						]
+
+					]);
+			}
+		}
+
+
+
+		return Response::json([
+			'files'=>[
+					[
+						'error'=>'Invalid file.'
+					]
+				]
+
+			]);
+
+	}
+
 
 	private function getRoleName($role){
 		switch ($role) {
