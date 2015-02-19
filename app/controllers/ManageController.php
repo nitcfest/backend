@@ -1,0 +1,176 @@
+<?php
+
+
+class ManageController extends BaseController {
+
+	public function login(){
+		if (Auth::manager()->check()) {
+		    return Redirect::route('manager_dashboard');
+		} else {
+		    return View::make('login');
+		}
+	}
+
+	public function postLogin(){
+		$email = Input::get('email');
+		$password = Input::get('password');
+
+		if (Auth::manager()->attempt(array('email' => $email, 'password' => $password, 'validated' => true)))
+		{
+		    return Redirect::intended(route('manager_dashboard'));
+		}else{
+			Session::flash('error', 'Invalid email or password.');
+			return View::make('login');
+		}
+	}
+
+	public function logout(){
+		Auth::manager()->logout();
+
+		Session::flash('notice', 'You have logged out.');
+
+		return Redirect::route('manager_login');
+	}
+
+	public function index()
+	{
+		return View::make('dashboard');
+	}
+
+	public function managers()
+	{
+		$managers = Manager::orderBy('created_at','desc')->get(['name','email','role','event_code','validated']);
+
+		$managers->map(function($manager){
+
+			if($manager->validated == 0)
+				$manager->status = 'Not Validated';
+			else
+				$manager->status = 'Active';
+
+			if($manager->event_code == '')
+				$manager->event_code = '-';
+
+			$manager->type = $this->getRoleName($manager->role);
+
+			return $manager;
+
+		});
+
+		return View::make('managers', array('managers'=>$managers));
+	}
+
+	public function managersNew(){
+		$rules = array(
+			'email' => 'required|email|unique:managers',
+			'password' => 'required|min:6',
+			'role' => 'numeric',
+			);
+		$validator = Validator::make(Input::all(), $rules);
+
+		$validator->sometimes('event_code', 'required|alpha_num', function($input)
+		{
+		    return $input->role == 2;
+		});
+
+
+		if ($validator->fails())
+		{
+			$print = '';
+		    $messages = $validator->messages();
+
+		    foreach ($messages->all() as $message)
+		    {
+		    	$print.= $message."<br>";   
+		    }
+
+
+			Session::flash('error', $print);
+			return Redirect::route('manager_managers');
+		}
+
+		$manager = new Manager;
+
+		$manager->email = Input::get('email');
+		$manager->password = Hash::make(Input::get('password'));
+		$manager->role = Input::get('role');
+		$manager->event_code = Input::get('event_code',NULL);
+		$manager->validated = true;
+		$manager->save();
+
+		Session::flash('success', 'Manager added successfully.');
+		return Redirect::route('manager_managers');
+	}
+
+
+	public function events()
+	{
+		$events = Events::with('category')->orderBy('created_at','desc')->get();
+
+		// return $events;
+		$events->map(function($event){
+
+			if($event->validated == 0)
+				$event->status = 'Not Validated';
+			else
+				$event->status = 'Validated';
+
+			return $event;
+
+		});
+
+		return View::make('events', array('events'=>$events));
+	}
+
+	public function eventsNew(){
+		return View::make('events_edit');
+	}
+
+	public function eventsEdit(){
+		return 'yo';
+	}
+
+
+	private function getRoleName($role){
+		switch ($role) {
+
+			case 1:
+				return 'Website Admin'; //Edit details of event, Edit homepage, add news.
+				break;
+
+			case 2:
+				return 'Event Manager'; //Edit details of an event, Print List
+				break;
+
+			case 3:
+				return 'Registration'; //Registration, Hospitality, Results, Add Notes., Add news.
+				break;
+
+			case 4:
+				return 'Hospitality'; //Hospitality, Add Notes.
+				break;
+
+			case 5:
+				return 'Program Committee'; //Print List, Register for Event, Add Results, Add news.
+				break;
+
+			case 6:
+				return 'Results Entry'; //Results
+				break;
+
+			case 7:
+				return 'Printing Only'; //Print List, Results etc.
+				break;
+
+			case 21:
+				return 'Super Admin'; //All features
+				break;
+			
+
+			default:
+				return 'Unknown'; //Unknown number in role.
+				break;
+		}
+
+	}
+}

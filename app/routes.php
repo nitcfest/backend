@@ -43,11 +43,9 @@ Route::group(array(
 	    	'uses'=> 'ApiController@events'
 	    	));
 
-
 	    Route::get('event/{code}', array(
 	    	'uses'=> 'ApiController@event'
 	    	));
-
 
 	    Route::get('user', array(
 	    	'uses' => 'ApiController@user'
@@ -64,8 +62,69 @@ Route::group(array(
 	    Route::get('user/fb_login', array(
 	    	'uses' => 'ApiController@userFbLogin'
 	    	));
+	}
+);
 
 
+//Login, logout features of manage.
+Route::group(array(
+	'prefix' => 'manage',
+	), function(){
+	
+		Route::get('login', array(
+			'as' => 'manager_login',
+			'uses'=> 'ManageController@login',
+			));
+
+		Route::post('login', array(
+			'before' => 'csrf',
+			'uses'=> 'ManageController@postLogin',
+			));
+
+		Route::get('logout', array(
+			'as' => 'manager_logout',
+			'uses'=> 'ManageController@logout',
+			));
+	}
+);
+
+//Features after being logged in.
+Route::group(array(
+	'prefix' => 'manage',
+	'before' => 'auth.manager',
+	), function(){
+	
+
+	    Route::get('/', array(
+	    	'as' => 'manager_dashboard',
+	    	'uses'=> 'ManageController@index'
+	    	));
+
+	    Route::get('managers', array(
+	    	'as' => 'manager_managers',
+	    	'uses'=> 'ManageController@managers'
+	    	));
+
+	    Route::post('managers/new', array(
+	    	'as' => 'action_new_manager',
+	    	'before' => 'csrf',
+	    	'uses'=> 'ManageController@managersNew'
+	    	));
+
+	    Route::get('events', array(
+	    	'as' => 'manager_events',
+	    	'uses'=> 'ManageController@events'
+	    	));
+
+	    Route::get('events/new', array(
+	    	'as' => 'action_new_event',
+	    	'uses'=> 'ManageController@eventsNew'
+	    	));
+
+	    Route::get('events/{id}', array(
+	    	'as' => 'action_edit_event',
+	    	'uses'=> 'ManageController@eventsEdit'
+	    	));
 	}
 );
 

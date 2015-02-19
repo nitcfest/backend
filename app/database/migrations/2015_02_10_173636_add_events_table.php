@@ -23,6 +23,7 @@ class AddEventsTable extends Migration {
 		   	$table->string('name', 100);
 
 		   	$table->string('tags', 1000)->nullable();
+		   	$table->string('event_email', 50)->nullable();
 		   	$table->string('contacts', 3000)->nullable();
 		   	$table->string('prizes', 3000)->nullable();
 		   	$table->string('short_description', 3000)->nullable();
