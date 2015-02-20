@@ -42,6 +42,7 @@ Events
                     <th>Name</th>
                     <th>Status</th>
                     <th>Actions</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,7 +55,19 @@ Events
                        <td>{{$event->category->name }}</td>
                        <td>{{$event->name }}</td>
                        <td>{{$event->status }}</td>
-                       <td><a href="{{URL::route('action_edit_event', $event->id)}}" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> Edit</a></td>
+                       <td>
+                        <a href="{{URL::route('action_edit_event', $event->id)}}" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+                        
+                        @if($event->validated == false)
+                        <a href="{{URL::route('action_change_event_status')}}?id={{$event->id}}&to=validate" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-ok"></span> Validate</a>
+                        @else
+                        <a href="{{URL::route('action_change_event_status')}}?id={{$event->id}}&to=invalidate" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-remove"></span> Invalidate</a>
+                        @endif
+
+                       </td>
+                       <td>
+                        <a href="" onclick="alert('Contact admin')" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+                       </td>
                    </tr>
                 @endforeach
             </tbody>

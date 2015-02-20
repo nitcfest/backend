@@ -34,7 +34,10 @@ class ManageController extends BaseController {
 
 	public function index()
 	{
-		return View::make('dashboard');
+		$events_count = Events::where('validated','=',true)->count();
+		$managers_count = Manager::where('validated','=',true)->count();
+
+		return View::make('dashboard', array('events_count'=>$events_count, 'managers_count'=>$managers_count ));
 	}
 
 	public function managers()
@@ -195,31 +198,35 @@ class ManageController extends BaseController {
 		$event->team_min = 1;
 		$event->team_max = 1;
 		$event->prizes = "First Prize:\nSecond Prize:\nThird Prize:";
-		$event->email = '';
+		$event->event_email = '';
 
-		//Process data from rows.
 		$data = new stdClass();
-		$data->manager1_name = '';
-		$data->manager1_phone = '';
-		$data->manager2_name = '';
-		$data->manager2_phone = '';
-		$data->manager3_name = '';
-		$data->manager3_phone = '';
+		$data->contacts = array(
+			[
+				'name'=>'',
+				'phone' =>'',
+				'email' =>'',
+				'facebook' =>''
+			],
+			[
+				'name'=>'',
+				'phone' =>'',
+				'email' =>'',
+				'facebook' =>''
+			],
+			[
+				'name'=>'',
+				'phone' =>'',
+				'email' =>'',
+				'facebook' =>''
+			],
+			);
 
 		$data->sections = array(
 			[
 				'title'=>'Introduction',
-				'text' =>'Lorem ipsum'
-			],
-			[
-				'title'=>'Boss',
-				'text' =>'dolor sit'
-			],
-			[
-				'title'=>'Heyya',
 				'text' =>''
-			],
-			);
+			]);
 
 		return View::make('events_edit',array(
 			'event' => $event,  
@@ -229,24 +236,56 @@ class ManageController extends BaseController {
 			));
 	}
 
+	public function eventsChangeStatus(){
+		$id = Input::get('id');
+		$to = Input::get('to');
+
+		$event = Events::whereId($id)->first();
+
+		if($to == 'validate')
+			$event->validated = true;
+		else if($to == 'invalidate')
+			$event->validated = false;
+
+		$event->save();
+
+		Session::flash('success', 'Event status updated.');
+		return Redirect::route('manager_events');
+
+	}
+
 	public function eventsEdit($id = NULL){
 
 		$event = Events::whereId($id)->first();
 		$event_categories = EventCategories::get(['id','parent_id','name']);
 
+		$long_description = $event->long_description;
+
+		$sections = preg_split('/\|\|sec\|\|/m', $long_description, -1, PREG_SPLIT_NO_EMPTY);
+		$sections_array = array();
+		foreach ($sections as $section) {
+			$parts = preg_split('/\|\|ttl\|\|/m', $section, 2, PREG_SPLIT_NO_EMPTY);
+			array_push($sections_array, array('title'=>$parts[0],'text'=>$parts[1]));
+		}
+
+		$contacts_raw = $event->contacts;
+		$contacts = preg_split('/\|\|con\|\|/m', $contacts_raw, -1);
+		$contacts_array = array();
+		foreach ($contacts as $contact) {
+			$parts = preg_split('/\|\|@\|\|/m', $contact, 4, PREG_SPLIT_NO_EMPTY);
+			array_push($contacts_array,array(
+					'name' => $parts[0],
+					'phone' => $parts[1],
+					'email' => $parts[2],
+					'facebook' => $parts[3],
+					));
+		}
+								
+
 		//Process data from rows.
 		$data = new stdClass();
-		$data->manager1_name = '';
-		$data->manager1_phone = '';
-		$data->manager2_name = '';
-		$data->manager2_phone = '';
-		$data->manager3_name = '';
-		$data->manager3_phone = '';
-
-		$data->sections = array(
-			'Introduction' => '',
-			);
-
+		$data->contacts = $contacts_array;
+		$data->sections = $sections_array;
 
 		return View::make('events_edit',array(
 			'event' => $event,
@@ -258,7 +297,64 @@ class ManageController extends BaseController {
 	}
 
 	public function eventsSave(){
-		return Input::all();
+		$input = Input::all();
+
+		if($input['current_id']=='new'){
+			$event = new Events;
+		} else {
+			$event = Events::whereId($input['current_id'])->get();
+
+			if($event->count()==0) //Unknown ID?
+				return Redirect::route('manager_events');		
+
+			$event = $event->first();	
+		}
+
+		$contacts = '';		
+		for($i=0;$i<count($input['manager_name']);$i++){			
+
+			if($i!=0)
+				$contacts .= '||con||';
+
+			$contacts.= ($input['manager_name'][$i]==''?' ':$input['manager_name'][$i]) .'||@||'.
+						($input['manager_phone'][$i]==''?' ':$input['manager_phone'][$i]) .'||@||'.
+						($input['manager_email'][$i]==''?' ':$input['manager_email'][$i]) .'||@||'.
+						($input['manager_facebook'][$i]==''?' ':$input['manager_facebook'][$i]);
+		}
+
+
+		$long_description = '';
+		for($i=0;$i<count($input['section_title']);$i++){			
+
+			if($i!=0)
+				$long_description .= '||sec||';
+
+			$long_description .= $input['section_title'][$i] . '||ttl||' . $input['section_description'][$i];
+		}
+
+
+		
+		$event->event_code = $input['event_code'];
+		$event->name = $input['name'];
+		$event->category_id = $input['category_id'];
+		$event->short_description = $input['short_description'];
+		$event->long_description = $long_description;
+		$event->tags = $input['tags'];
+		$event->team_min = $input['team_min'];
+		$event->team_max = $input['team_max'];
+		$event->prizes = $input['prizes'];
+		$event->event_email = $input['event_email'];
+		$event->contacts = $contacts;
+
+		$event->save();
+
+		if($input['current_id']=='new')
+			Session::flash('success', 'New event created.');
+		else
+			Session::flash('success', 'Event details updated.');
+		
+		return Redirect::route('action_edit_event', $event->id);
+
 	}
 
 	public function eventsUploadImage(){

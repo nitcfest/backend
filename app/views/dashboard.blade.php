@@ -25,7 +25,7 @@ CMS Manager
                         <i class="fa fa-clock-o fa-5x"></i>
                     </div>
                     <div class="col-xs-9 text-right">
-                        <div class="huge">50</div>
+                        <div class="huge">{{$events_count}}</div>
                         <div class="big">Active Events</div>
                     </div>
                 </div>
@@ -40,8 +40,8 @@ CMS Manager
                         <i class="fa fa-user fa-5x"></i>
                     </div>
                     <div class="col-xs-9 text-right">
-                        <div class="huge">40</div>
-                        <div class="big">Student Registrations</div>
+                        <div class="huge">{{$managers_count}}</div>
+                        <div class="big">Managers</div>
                     </div>
                 </div>
             </div>

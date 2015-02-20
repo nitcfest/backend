@@ -142,6 +142,10 @@ Route::group(array(
 	    	'uses'=> 'ManageController@eventsNew'
 	    	));
 
+	    Route::get('events/change_status', array(
+	    	'as' => 'action_change_event_status',
+	    	'uses'=> 'ManageController@eventsChangeStatus'
+	    	));
 
 	    Route::get('events/{id}', array(
 	    	'as' => 'action_edit_event',

@@ -20,7 +20,7 @@
 
 @section('content')
 
-<form action="{{ URL::route('action_save_event') }}" method="POST" role="form">
+<form action="{{ URL::route('action_save_event') }}" id="main_form" method="POST" role="form">
     
     @if($page_type=='new')
         <input type="hidden" name="current_id" value="new">
@@ -31,7 +31,7 @@
     {{Form::token()}}
 
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <h1 class="page-header">
                 @if($page_type=='new')
                     New Event
@@ -41,6 +41,16 @@
 
             </h1>
             <button type="submit" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Save Changes</button>
+        </div>
+        <div class="col-lg-6">
+        <br>
+            @if (Session::get('error'))
+                <div class="alert alert-error alert-danger">{{ Session::get('error') }}</div>
+            @endif
+
+            @if (Session::get('success'))
+                <div class="alert alert-success">{{ Session::get('success') }}</div>
+            @endif
         </div>
     </div>
 
@@ -93,46 +103,39 @@
             <div class="form-group">
                 <label>Event Email (if available)</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" name="event_email" value="{{$event->email}}">
+                    <input type="text" class="form-control" name="event_email" value="{{$event->event_email}}">
                     <div class="input-group-addon">{{'@'.Config::get('app.domain')}}</div>
                 </div>
             </div>
 
             <h3>Contacts</h3>
 
+            <?php $i=1 ?>
+            @foreach($data->contacts as $contact)
             <div class="well">
-                <h4>Manager 1</h4>  
+                <h4>Manager {{$i}}</h4>  
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" name="manager1_name" value="{{$data->manager1_name}}" required>
+                    <input type="text" class="form-control" name="manager_name[]" value="{{$contact['name']}}" @if($i==1) required @endif >
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
-                    <input type="text" class="form-control" name="manager1_phone" value="{{$data->manager1_phone}}" required>
+                    <input type="text" class="form-control" name="manager_phone[]" value="{{$contact['phone']}}" @if($i==1) required @endif >
                 </div>
-            </div>
-            <div class="well">
-                <h4>Manager 2 (optional)</h4>  
                 <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" class="form-control" name="manager2_name" value="{{$data->manager2_name}}">
+                    <label>Email</label>
+                    <input type="text" class="form-control" name="manager_email[]" value="{{$contact['email']}}" @if($i==1) required @endif >
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
-                    <input type="text" class="form-control" name="manager2_phone" value="{{$data->manager2_phone}}">
+                    <input type="text" class="form-control" name="manager_facebook[]" value="{{$contact['facebook']}}" @if($i==1) required @endif >
                 </div>
             </div>
-            <div class="well">
-                <h4>Manager 3 (optional)</h4>  
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" class="form-control" name="manager3_name" value="{{$data->manager3_name}}">
-                </div>
-                <div class="form-group">
-                    <label>Phone</label>
-                    <input type="text" class="form-control" name="manager3_phone" value="{{$data->manager3_phone}}">
-                </div>
-            </div>
+
+            <?php $i++; ?>
+            @endforeach
+
+           
         </div>
         <div class="col-md-8">
             <h3>Event Description</h3><br>
@@ -148,7 +151,7 @@
                         <div class="form-group">
                             <label>Description</label>
                             <div class="editor-container">              
-                                <textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;" name="section_description[]" required>{{$section['text']}}</textarea>
+                                <textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;" name="section_description[]">{{$section['text']}}</textarea>
                             </div>
                         </div>  
 
@@ -219,14 +222,15 @@
             $(this).find('.section-editor-textarea').wysihtml5(editor_settings);
             editor_settings.instance+=1;
         });
-      
+
+        $('.section-block').first().find('.section-title').attr('readonly',true);
 
         $('#btn-add-section').on('click', function(event) {
             event.preventDefault();
 
             var block = $('.section-block').last().clone();
-            block.find('.section-title').val('');
-            block.find('.editor-container').html('<textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;" name="section_description[]" required></textarea>');
+            block.find('.section-title').val('').attr('readonly',false);
+            block.find('.editor-container').html('<textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;" name="section_description[]"></textarea>');
             block.appendTo('#section-block-container');
             editor_settings.instance+=1;
 
@@ -239,34 +243,46 @@
 
             if($('.section-block').length > 1){
                 $('.section-block').last().remove();
-                $('.section-block').last().scrollTo();
             }
         });
 
-        $('#section-block-container').on('click', '.btn-section-move-up', function(event) {
-            event.preventDefault();
+        $('#main_form').submit(function(event) {
+            $('.section-block').each(function(){
+                if($(this).find('.section-editor-textarea').val() == ''){
+                    alert('A section cannot be left blank. Remove the section if it is not required.');
+                    event.preventDefault();
+                    return false;
+                }
+            });
 
-            var current_parent = $(this).parents('.section-block');
-
-            var position = $('.section-block').index(current_parent);
-
-            if(position > 0){
-                $('.section-block').eq(position-1).insertAfter($('.section-block').eq(position));               
-            }
+            return true;                                            
         });
 
-        $('#section-block-container').on('click', '.btn-section-move-down', function(event) {
-            event.preventDefault();
+        // Move functions. Not working perfect right now.
+        // $('#section-block-container').on('click', '.btn-section-move-up', function(event) {
+        //     event.preventDefault();
 
-            var current_parent = $(this).parents('.section-block');
+        //     var current_parent = $(this).parents('.section-block');
 
-            var position = $('.section-block').index(current_parent);
-            var last = $('.section-block').index($('.section-block').last());
+        //     var position = $('.section-block').index(current_parent);
 
-            if(position < last){
-                $('.section-block').eq(position+1).insertBefore($('.section-block').eq(position));
-            }
-        });
+        //     if(position > 0){
+        //         $('.section-block').eq(position-1).insertAfter($('.section-block').eq(position));               
+        //     }
+        // });
+
+        // $('#section-block-container').on('click', '.btn-section-move-down', function(event) {
+        //     event.preventDefault();
+
+        //     var current_parent = $(this).parents('.section-block');
+
+        //     var position = $('.section-block').index(current_parent);
+        //     var last = $('.section-block').index($('.section-block').last());
+
+        //     if(position < last){
+        //         $('.section-block').eq(position+1).insertBefore($('.section-block').eq(position));
+        //     }
+        // });
 
 
 
