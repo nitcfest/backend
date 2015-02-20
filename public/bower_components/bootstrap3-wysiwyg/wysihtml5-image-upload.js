@@ -257,6 +257,8 @@
 			var insertButton = insertImageModal.find('a.btn-primary');
 			var caretBookmark;
 
+			var current_instance = parseInt(toolbar.find('a[data-wysihtml5-command=insertImage]').data('instance'));
+
 			var insertImage = function() {
 
 				self.editor.currentView.element.focus();
@@ -266,7 +268,7 @@
 				}
 
 				// Find all image URLs
-				$('#files_'+ defaultOptions.instance +' img').each(function() {
+				$('#files_'+ current_instance +' img').each(function() {
 					var url = $(this).data('url');
 					if (url) {
 						self.editor.composer.commands.exec("insertImage", url);
@@ -287,8 +289,6 @@
 			toolbar.find('a[data-wysihtml5-command=insertImage]').click(function() {
 				var activeButton = $(this).hasClass("wysihtml5-command-active");
 
-				var current_instance = parseInt($(this).data('instance'));
-
 				if (!activeButton) {
 					self.editor.currentView.element.focus(false);
 					caretBookmark = self.editor.composer.selection.getBookmark();
@@ -305,6 +305,8 @@
 
 					// Function to update status of "insert" button
 					var updateInsertBtn = function () {
+						insertButton.data('instance', current_instance);
+
 						var imgCount = 0;
 
 						$('#files_'+ current_instance +' img').each(function() {
