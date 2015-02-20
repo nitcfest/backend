@@ -9,4 +9,5 @@ class Events extends Eloquent
 	public function category(){
 		return $this->belongsTo('EventCategories','category_id');
 	}
+
 }

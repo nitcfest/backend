@@ -75,6 +75,9 @@
                             <a href="{{ URL::route('manager_managers') }}"><i class="fa fa-fw fa-lg fa-group" style="vertical-align: middle;"></i> Managers</a>
                         </li>
                         <li>
+                            <a href="{{ URL::route('manager_event_categories') }}"><i class="fa fa-fw fa-lg fa-list" style="vertical-align: middle;"></i> Event Categories</a>
+                        </li>
+                        <li>
                             <a href="{{ URL::route('manager_events') }}"><i class="fa fa-fw fa-lg fa-clock-o" style="vertical-align: middle;"></i> Events</a>
                         </li>
                         <li>

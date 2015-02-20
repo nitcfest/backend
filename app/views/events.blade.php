@@ -54,7 +54,7 @@ Events
                        <td>{{$event->category->name }}</td>
                        <td>{{$event->name }}</td>
                        <td>{{$event->status }}</td>
-                       <td><a href="{{URL::route('action_edit_event', $event->id)}}" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> Edit</button>
+                       <td><a href="{{URL::route('action_edit_event', $event->id)}}" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-pencil"></span> Edit</a></td>
                    </tr>
                 @endforeach
             </tbody>

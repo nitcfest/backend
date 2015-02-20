@@ -1,7 +1,13 @@
 @extends('layouts.user')
 
 @section('title')
-Edit Event
+
+@if($page_type=='new')
+    New Event
+@else
+    Edit Event
+@endif
+
 @stop
 
 @section('head')
@@ -14,28 +20,47 @@ Edit Event
 
 @section('content')
 
-<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header">Edit Event</h1>
-        <button type="button" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Save Changes</button>
-    </div>
-</div>
+<form action="{{ URL::route('action_save_event') }}" method="POST" role="form">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">
+                @if($page_type=='new')
+                    New Event
+                @else
+                    Edit Event
+                @endif
 
-<form action="" method="POST" role="form">
+            </h1>
+            <button type="submit" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-floppy-disk"></span> Save Changes</button>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-md-4">
             <h3>Basic Details</h3>
             <div class="form-group">
                 <label>Event Code</label>
-                <input type="text" class="form-control" name="event_code">
+                <input type="text" class="form-control" name="event_code" required>
             </div>
             <div class="form-group">
                 <label>Event Name</label>
-                <input type="text" class="form-control" name="name">
+                <input type="text" class="form-control" name="name" required>
+            </div>
+            <div class="form-group">
+                <label>Event Category</label>
+
+                <select name="category_id" class="form-control">
+                    @foreach ($event_categories as $category)
+                        <option value="{{ $category->id }}">
+                            @if($category->parent_id === 0) Root :: @endif {{ $category->name }}</option>    
+                    @endforeach
+                </select>
+
+
             </div>
             <div class="form-group">
                 <label>Short Description</label>
-                <textarea class="form-control" rows="2" name="short_description"></textarea>
+                <textarea class="form-control" rows="2" name="short_description" required></textarea>
             </div>
             <div class="form-group">
                 <label>Tags (seperate by comma, used for search)</label>
@@ -44,17 +69,17 @@ Edit Event
 
             <div class="form-group">
                 <label>Min. Team Size (1 for individual)</label>
-                <input type="text" class="form-control" name="team_min">
+                <input type="text" class="form-control" name="team_min" required>
             </div>
 
             <div class="form-group">
                 <label>Max. Team Size (1 for individual)</label>
-                <input type="text" class="form-control" name="team_min">
+                <input type="text" class="form-control" name="team_max" required>
             </div>
 
             <div class="form-group">
                 <label>Prizes</label>
-                <textarea class="form-control" rows="3" name="prizes"></textarea>
+                <textarea class="form-control" rows="4" name="prizes"></textarea>
             </div>
 
             <div class="form-group">
@@ -71,11 +96,11 @@ Edit Event
                 <h4>Manager 1</h4>  
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" name="manager1_name">
+                    <input type="text" class="form-control" name="manager1_name" required>
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
-                    <input type="text" class="form-control" name="manager1_phone">
+                    <input type="text" class="form-control" name="manager1_phone" required>
                 </div>
             </div>
             <div class="well">
@@ -108,12 +133,12 @@ Edit Event
                     <div class="section-editor well">
                         <div class="form-group">
                             <label>Section Title</label>
-                            <input type="text" class="form-control section-title" name="section_title">
+                            <input type="text" class="form-control section-title" name="section_title[]" required>
                         </div>  
                         <div class="form-group">
                             <label>Description</label>
                             <div class="editor-container">              
-                                <textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;"></textarea>
+                                <textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;" name="section_description[]" required></textarea>
                             </div>
                         </div>  
 
@@ -186,7 +211,7 @@ Edit Event
 
             var block = $('.section-block').last().clone();
             block.find('.section-title').val('');
-            block.find('.editor-container').html('<textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;"></textarea>');
+            block.find('.editor-container').html('<textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;" name="section_description[]" required></textarea>');
             block.appendTo('#section-block-container');
             editor_settings.instance+=1;
 

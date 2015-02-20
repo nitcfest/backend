@@ -111,6 +111,27 @@ Route::group(array(
 	    	'uses'=> 'ManageController@managersNew'
 	    	));
 
+
+	    Route::get('event_categories', array(
+	    	'as' => 'manager_event_categories',
+	    	'uses'=> 'ManageController@eventCategories'
+	    	));
+
+
+	    Route::post('event_categories/add', array(
+	    	'as' => 'action_add_event_category',
+	    	'uses'=> 'ManageController@eventCategoriesNew'
+	    	));
+
+
+	    Route::get('event_categories/delete/{id}', array(
+	    	'as' => 'action_delete_event_category',
+	    	'uses'=> 'ManageController@eventCategoriesDelete'
+	    	));
+
+
+
+
 	    Route::get('events', array(
 	    	'as' => 'manager_events',
 	    	'uses'=> 'ManageController@events'
@@ -121,10 +142,18 @@ Route::group(array(
 	    	'uses'=> 'ManageController@eventsNew'
 	    	));
 
+
 	    Route::get('events/{id}', array(
 	    	'as' => 'action_edit_event',
 	    	'uses'=> 'ManageController@eventsEdit'
 	    	))->where('id','[0-9]+');
+
+
+	    Route::post('events/save', array(
+	    	'as' => 'action_save_event',
+	    	'uses'=> 'ManageController@eventsSave'
+	    	));
+
 
 	    Route::post('events/upload_image', array(
 	    	'as' => 'action_upload_image',

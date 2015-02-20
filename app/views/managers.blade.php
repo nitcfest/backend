@@ -100,22 +100,24 @@ Managers
 @stop
 
 @section('scripts')
-
 <script>
-    $('#btn-add-manager').on('click', function(event) {
-        event.preventDefault();
+    $(function() {
+        $('#btn-add-manager').on('click', function(event) {
+            event.preventDefault();
 
-        if($('#div-add-manager').is(':hidden'))
-            $('#div-add-manager').slideDown();
-        else
-            $('#div-add-manager').slideUp();
+            if($('#div-add-manager').is(':hidden'))
+                $('#div-add-manager').slideDown();
+            else
+                $('#div-add-manager').slideUp();
+        });
+
+        $('#form-select-role').on('change', function(event) {
+            if($('#form-select-role').val() == 2)
+                $('#div-event-code').slideDown();
+            else
+                $('#div-event-code').slideUp();
+        });
     });
 
-    $('#form-select-role').on('change', function(event) {
-        if($('#form-select-role').val() == 2)
-            $('#div-event-code').slideDown();
-        else
-            $('#div-event-code').slideUp();
-    });
 </script>
 @stop

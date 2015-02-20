@@ -103,6 +103,67 @@ class ManageController extends BaseController {
 	}
 
 
+	public function eventCategories()
+	{
+		$event_categories = EventCategories::with('events')->get();
+
+
+		$event_categories->map(function($category){
+
+			if($category->parent_id == 0)
+				$category->type = 'Main';
+			else{
+				$parent_name = EventCategories::where('id','=',$category->parent_id)->first()->name;
+				$category->type = 'Sub:'.$parent_name;
+			}
+
+			$category->events = Events::where('category_id','=',$category->id)->count();
+
+			return $category;
+
+		});
+
+		return View::make('event_categories', array('event_categories'=>$event_categories));
+	}
+
+	public function eventCategoriesNew(){
+		$name = Input::get('name');
+		$parent_id = Input::get('parent_id');
+
+		return $parent_id;
+		if($name!='' && is_numeric($parent_id)){
+			$new_category = new EventCategories;
+
+			$new_category->name = $name;
+			$new_category->parent_id = $parent_id;
+			$new_category->save();
+
+			Session::flash('success', 'Category added.');
+			return Redirect::route('manager_event_categories');
+		}
+
+		Session::flash('error', 'Could not add category.');
+		return Redirect::route('manager_event_categories');
+	}
+
+	public function eventCategoriesDelete($id = NULL){
+
+		$count_events = Events::where('category_id','=',$id)->count();
+
+		if($count_events == 0){
+			EventCategories::destroy($id);
+
+			Session::flash('success', 'Category deleted.');
+			return Redirect::route('manager_event_categories');
+		}else{
+
+
+			Session::flash('error', 'Could not delete category.');
+			return Redirect::route('manager_event_categories');
+		}
+	}
+
+
 	public function events()
 	{
 		$events = Events::with('category')->orderBy('created_at','desc')->get();
@@ -123,11 +184,22 @@ class ManageController extends BaseController {
 	}
 
 	public function eventsNew(){
-		return View::make('events_edit');
+
+		$event_categories = EventCategories::get(['id','parent_id','name']);
+
+		return View::make('events_edit',array(
+			'event_categories' => $event_categories,
+			'page_type' => 'new'
+			));
 	}
 
 	public function eventsEdit(){
 		return 'yo';
+	}
+
+	public function eventsSave(){
+		return Input::all();
+
 	}
 
 	public function eventsUploadImage(){
