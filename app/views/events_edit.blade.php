@@ -138,9 +138,8 @@
             <h3>Event Description</h3><br>
             <div id="section-block-container">
 
-                <?php $i=1; ?>
                 @foreach($data->sections as $section)
-                <div class="section-block" data-instance="{{$i}}">
+                <div class="section-block">
                     <div class="section-editor well">
                         <div class="form-group">
                             <label>Section Title</label>
@@ -161,8 +160,6 @@
                         <div class="clearfix"></div> -->
                     </div>
                 </div>
-
-                <?php $i++; ?>
                 @endforeach
 
             </div>

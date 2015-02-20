@@ -100,7 +100,7 @@
 					'</div>' +
 				'</div>' +
 			  '</div>' +
-			  '<a data-toggle="modal" href="#bootstrap-wysihtml5-insert-image-modal_'+ defaultOptions.instance +'" class="btn btn-default' + size + '" data-wysihtml5-command="insertImage" title="' + locale.image.insert + '" tabindex="-1"><i class="glyphicon glyphicon-picture"></i></a>' +
+			  '<a data-toggle="modal" data-instance="'+ defaultOptions.instance +'" href="#bootstrap-wysihtml5-insert-image-modal_'+ defaultOptions.instance +'" class="btn btn-default' + size + '" data-wysihtml5-command="insertImage" title="' + locale.image.insert + '" tabindex="-1"><i class="glyphicon glyphicon-picture"></i></a>' +
 			'</li>';
 		},
 
@@ -287,6 +287,8 @@
 			toolbar.find('a[data-wysihtml5-command=insertImage]').click(function() {
 				var activeButton = $(this).hasClass("wysihtml5-command-active");
 
+				var current_instance = parseInt($(this).data('instance'));
+
 				if (!activeButton) {
 					self.editor.currentView.element.focus(false);
 					caretBookmark = self.editor.composer.selection.getBookmark();
@@ -296,16 +298,16 @@
 					});
 
 					// Remove previously uploaded images from list
-					$('#files_'+ defaultOptions.instance +', #filealerts_'+ defaultOptions.instance).empty();
+					$('#files_'+ current_instance +', #filealerts_'+ current_instance).empty();
 
 					// Reset progress bar
-					$('#progress_'+ defaultOptions.instance +' .progress-bar').css('width', '0');
+					$('#progress_'+ current_instance +' .progress-bar').css('width', '0');
 
 					// Function to update status of "insert" button
 					var updateInsertBtn = function () {
 						var imgCount = 0;
 
-						$('#files_'+ defaultOptions.instance +' img').each(function() {
+						$('#files_'+ current_instance +' img').each(function() {
 							var url = $(this).data('url');
 							if (url) {
 								imgCount++;
@@ -326,15 +328,15 @@
 					// Update "insert" button now
 					updateInsertBtn();
 
-					alert('try');
+					
 					// Init file upload
-					$('#fileupload_'+ defaultOptions.instance).fileupload({
+					$('#fileupload_'+ current_instance).fileupload({
 						dataType: 'json',
 						always: function (e, data) {
 							if (data.hasOwnProperty('result')) {
 								$.each(data.result.files, function (index, file) {
 									if (file.hasOwnProperty('error')) {
-										$('#filealerts_'+ defaultOptions.instance).append($('<div class="alert alert-danger"></div>').text('The file “' + file.name + '” could not be stored (' + file.error + ').'));
+										$('#filealerts_'+ current_instance).append($('<div class="alert alert-danger"></div>').text('The file “' + file.name + '” could not be stored (' + file.error + ').'));
 									} else {
 										var newimg = $('<img/>').attr('src', file.thumbnailUrl).data('url', file.url).attr('class', 'img-thumbnail');
 										var removebtn = $('<button type="button" class="close">×</button>').click(function() {
@@ -342,22 +344,22 @@
 											updateInsertBtn();
 										});
 										var li = $('<li/>').append(removebtn).append(newimg);
-										$('#files_'+ defaultOptions.instance).prepend(li);
+										$('#files_'+ current_instance).prepend(li);
 										updateInsertBtn();
 									}
 								});
 							} else {
-								$('#filealerts_'+ defaultOptions.instance).append($('<div class="alert alert-danger">Upload failed. Try again!</div>'));
+								$('#filealerts_'+ current_instance).append($('<div class="alert alert-danger">Upload failed. Try again!</div>'));
 							}
 						},
 						progressall: function (e, data) {
 							var progress = Math.round(data.loaded / data.total * 100);
 							if (progress < 100) {
-								$('#progress_'+ defaultOptions.instance).addClass('progress-striped active');
+								$('#progress_'+ current_instance).addClass('progress-striped active');
 							} else {
-								$('#progress_'+ defaultOptions.instance).removeClass('progress-striped active');
+								$('#progress_'+ current_instance).removeClass('progress-striped active');
 							}
-							$('#progress_'+ defaultOptions.instance +' .progress-bar').css('width', progress + '%');
+							$('#progress_'+ current_instance +' .progress-bar').css('width', progress + '%');
 						}
 					}).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
 
