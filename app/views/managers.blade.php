@@ -34,6 +34,8 @@ Managers
                     <label>Type</label>
                     <select name="role" id="form-select-role" class="form-control">
                         <option value="2">Event Manager</option>
+                        <option value="8">Proofreader</option>
+                        <option value="1">Website Admin</option>
                         <option value="3">Registration</option>
                         <option value="4">Hospitality</option>
                         <option value="5">Program Committee</option>
@@ -73,8 +75,10 @@ Managers
                     <th>Name</th>
                     <th>Email</th>
                     <th>Type</th>
+                    <th>Roll No</th>
                     <th>Event Code</th>
                     <th>Status</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -86,8 +90,16 @@ Managers
                        <td>{{$manager->name }}</td>
                        <td>{{$manager->email }}</td>
                        <td>{{$manager->type }}</td>
+                       <td>{{$manager->roll_no }}</td>
                        <td>{{$manager->event_code }}</td>
                        <td>{{$manager->status }}</td>
+                       <td>                           
+                            @if($manager->validated == false)
+                            <a href="{{URL::route('action_change_manager_status')}}?id={{$manager->id}}&to=validate" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-ok"></span> Validate</a>
+                            @else
+                            <a href="{{URL::route('action_change_manager_status')}}?id={{$manager->id}}&to=invalidate" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-remove"></span> Invalidate</a>
+                            @endif
+                       </td>
                    </tr>
                 @endforeach
 

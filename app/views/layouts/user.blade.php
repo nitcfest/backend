@@ -57,7 +57,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ URL::to('/') }}">CMS Manager</a>
+                <a class="navbar-brand" href="{{ URL::route('manager_dashboard') }}">CMS Manager</a>
                 
             </div>
 
@@ -71,18 +71,42 @@
                         <li>
                             <a href="{{ URL::route('manager_dashboard') }}"><i class="fa fa-fw fa-lg fa-dashboard " style="vertical-align: middle;"></i> Dashboard</a>
                         </li>
+
+                        @if(in_array(Auth::manager()->get()->role,[21]))
                         <li>
                             <a href="{{ URL::route('manager_managers') }}"><i class="fa fa-fw fa-lg fa-group" style="vertical-align: middle;"></i> Managers</a>
                         </li>
+                        @endif
+
+                        @if(in_array(Auth::manager()->get()->role,[21]))
                         <li>
                             <a href="{{ URL::route('manager_event_categories') }}"><i class="fa fa-fw fa-lg fa-list" style="vertical-align: middle;"></i> Event Categories</a>
                         </li>
+                        @endif
+
+                        @if(in_array(Auth::manager()->get()->role,[2]))
+                        <li>
+                            <a href="{{ URL::route('action_event_redirect_to_edit') }}"><i class="fa fa-fw fa-lg fa-clock-o" style="vertical-align: middle;"></i> Edit Event</a>
+                        </li>
+                        @endif
+
+                        @if(in_array(Auth::manager()->get()->role,[1,3,5,8,21]))
                         <li>
                             <a href="{{ URL::route('manager_events') }}"><i class="fa fa-fw fa-lg fa-clock-o" style="vertical-align: middle;"></i> Events</a>
                         </li>
+                        @endif
+
+                        @if(in_array(Auth::manager()->get()->role,[1,3,5,21]))
                         <li>
-                            <a href="{{ URL::to('devices') }}"><i class="fa fa-fw fa-lg fa-pencil-square-o" style="vertical-align: middle;"></i> Edit Homepage</a>
+                            <a href="{{ URL::route('manager_edit_homepage') }}"><i class="fa fa-fw fa-lg fa-pencil-square-o" style="vertical-align: middle;"></i> Edit Homepage</a>
                         </li>
+                        @endif
+
+
+
+
+                        
+
                         <li class="visible-xs">
                             <a href="{{ URL::route('manager_logout') }}"><i class="fa fa-fw fa-lg fa-sign-out" style="vertical-align: middle;"></i> Logout</a>
                         </li>

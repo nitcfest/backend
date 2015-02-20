@@ -58,12 +58,57 @@ class ApiController extends BaseController {
 
 
 	public function event($code){
+
 		$event = Events::where('event_code','=',$code)->get();
 
 		if($event->count() == 0)
 			return Response::json(['response'=>'error','reason'=>'no_event']);
 
-		return $event;
+		$event = $event->first();
+
+		$long_description = $event->long_description;
+
+		$sections = preg_split('/\|\|sec\|\|/m', $long_description, -1, PREG_SPLIT_NO_EMPTY);
+		$sections_array = array();
+		foreach ($sections as $section) {
+			$parts = preg_split('/\|\|ttl\|\|/m', $section, 2, PREG_SPLIT_NO_EMPTY);
+			array_push($sections_array, array('title'=>$parts[0],'text'=>$parts[1]));
+		}
+
+		$contacts_raw = $event->contacts;
+		$contacts = preg_split('/\|\|con\|\|/m', $contacts_raw, -1);
+		$contacts_array = array();
+		foreach ($contacts as $contact) {
+			$parts = preg_split('/\|\|@\|\|/m', $contact, 4, PREG_SPLIT_NO_EMPTY);
+
+			if(trim($parts[0]) == '')
+				continue;
+
+			array_push($contacts_array,array(
+					'name' => trim($parts[0]),
+					'phone' => trim($parts[1]),
+					'email' => trim($parts[2]),
+					'facebook' => trim($parts[3]),
+					));
+		}
+								
+		$return_details = array(
+			'event_code' => $event->event_code,
+			'category_id' => $event->category_id,
+			'name' => $event->event_name,
+			'tags' => $event->tags,
+			'event_email' => $event->event_email,
+			'prizes' => $event->prizes,
+			'short_description' => $event->short_description,
+			'team_min' => $event->team_min,
+			'team_max' => $event->team_max,
+			'validated' => $event->validated,
+			'updated_at' => $event->updated_at 	,
+			'sections' => $sections_array,
+			'contacts' => $contacts_array,
+			);
+
+		return $return_details;
 	}
 
 

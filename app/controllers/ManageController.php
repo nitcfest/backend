@@ -20,9 +20,84 @@ class ManageController extends BaseController {
 		    return Redirect::intended(route('manager_dashboard'));
 		}else{
 			Session::flash('error', 'Invalid email or password.');
-			return View::make('login');
+			return Redirect::route('manager_login')->withInput();
 		}
 	}
+
+	public function signup(){
+
+		$event_categories = EventCategories::get(['id','parent_id','name']);
+
+		return View::make('signup', array('event_categories'=>$event_categories));
+	}
+
+	public function postSignup(){
+		$rules = array(
+			'name' => 'required|min:3',
+			'email' => 'required|email|unique:managers',
+			'roll_no' => 'required|min:3',
+			'password' => 'required|confirmed|min:4',
+			'role' => 'required|in:2,8', //Limit signup requests to Event Managers and Proofreaders.
+			);
+
+		$validator = Validator::make(Input::all(), $rules);
+
+		// TODO
+		// Un-hardcode MIN and MAX
+
+		$validator->sometimes('event_name', 'required|min:3', function($input)
+		{
+		    return $input->role == 2;
+		});
+
+		$validator->sometimes('event_code', 'required|alpha_num|min:3|max:3', function($input)
+		{
+		    return $input->role == 2;
+		});
+
+		$validator->sometimes('category_id', 'required|numeric|exists:event_categories,id', function($input)
+		{
+		    return $input->role == 2;
+		});
+
+
+
+		if ($validator->fails())
+		{
+			$print = '';
+		    $messages = $validator->messages();
+
+		    foreach ($messages->all() as $message)
+		    {
+		    	$print.= $message."<br>";   
+		    }
+
+
+			Session::flash('errors', $print);
+			return Redirect::route('manager_signup')->withInput();			
+		}
+
+		$manager = new Manager;
+		$manager->name = Input::get('name');
+		$manager->email = Input::get('email');
+
+		$manager->roll_no = Input::get('roll_no');
+		$manager->password = Hash::make(Input::get('password'));
+		$manager->role = Input::get('role');
+
+		$manager->signup_data = Input::get('event_name').'||@||'.Input::get('category_id');
+
+		$manager->event_code = Input::get('event_code', NULL);
+		$manager->validated = false;
+
+		$manager->save();
+
+
+		Session::flash('notice', 'You may log in after the admin validates your account.');
+		return Redirect::route('manager_login');
+	}
+
+
 
 	public function logout(){
 		Auth::manager()->logout();
@@ -37,12 +112,49 @@ class ManageController extends BaseController {
 		$events_count = Events::where('validated','=',true)->count();
 		$managers_count = Manager::where('validated','=',true)->count();
 
-		return View::make('dashboard', array('events_count'=>$events_count, 'managers_count'=>$managers_count ));
+		$manager = Auth::manager()->get();
+
+		if($manager->role == 2 && $manager->event_code!=''){
+			//If the user is an event manager, make sure an event with such a code is available. Else, create it.
+			//TODO - Reorganize
+			$event = Events::where('event_code','=',$manager->event_code)->get();
+
+			if($event->count() == 0){
+				//There is no event with the event code of the logged in user.
+
+				$new_event = new Events;
+				$new_event->event_code = $manager->event_code;
+
+				//Retrieve data that was stored during registration/signup.
+				$parts = preg_split('/\|\|@\|\|/m', $manager->signup_data, 2, PREG_SPLIT_NO_EMPTY);
+				if(count($parts)==2){
+					$new_event->name = $parts[0];
+
+					if(is_numeric($parts[1]))
+						$new_event->category_id = $parts[1];
+					else
+						$new_event->category_id = 1;
+				}else{
+					$new_event->category_id = 1;
+				}
+
+				$new_event->contacts = ' ||@|| ||@|| ||@|| ||con|| ||@|| ||@|| ||@|| ||con|| ||@|| ||@|| ||@|| ';
+				$new_event->long_description = 'Introduction||ttl|| ';
+				$new_event->prizes = "First Prize:\r\nSecond Prize:\r\nThird Prize:";
+				$new_event->validated = false;
+
+				$new_event->save();
+			}
+		}
+
+
+
+		return View::make('dashboard', array('events_count'=>$events_count, 'managers_count'=>$managers_count, 'event_code'=>$manager->event_code ));
 	}
 
 	public function managers()
 	{
-		$managers = Manager::orderBy('created_at','desc')->get(['name','email','role','event_code','validated']);
+		$managers = Manager::orderBy('created_at','desc')->get(['id','name','email','role','roll_no','event_code','validated']);
 
 		$managers->map(function($manager){
 
@@ -66,12 +178,12 @@ class ManageController extends BaseController {
 	public function managersNew(){
 		$rules = array(
 			'email' => 'required|email|unique:managers',
-			'password' => 'required|min:6',
+			'password' => 'required|min:4',
 			'role' => 'numeric',
 			);
 		$validator = Validator::make(Input::all(), $rules);
 
-		$validator->sometimes('event_code', 'required|alpha_num', function($input)
+		$validator->sometimes('event_code', 'required|alpha_num|min:3|max:3', function($input)
 		{
 		    return $input->role == 2;
 		});
@@ -106,6 +218,24 @@ class ManageController extends BaseController {
 	}
 
 
+	public function managersChangeStatus(){
+		$id = Input::get('id');
+		$to = Input::get('to');
+
+		$manager = Manager::whereId($id)->first();
+
+		if($to == 'validate')
+			$manager->validated = true;
+		else if($to == 'invalidate')
+			$manager->validated = false;
+
+		$manager->save();
+
+		Session::flash('success', 'Manager status updated.');
+		return Redirect::route('manager_managers');
+	}
+
+
 	public function eventCategories()
 	{
 		$event_categories = EventCategories::with('events')->get();
@@ -133,7 +263,6 @@ class ManageController extends BaseController {
 		$name = Input::get('name');
 		$parent_id = Input::get('parent_id');
 
-		return $parent_id;
 		if($name!='' && is_numeric($parent_id)){
 			$new_category = new EventCategories;
 
@@ -257,6 +386,14 @@ class ManageController extends BaseController {
 	public function eventsEdit($id = NULL){
 
 		$event = Events::whereId($id)->first();
+
+		$manager = Auth::manager()->get();
+
+		if($manager->role == 2 && $event->event_code!=$manager->event_code){
+			//Make sure event managers edit only their events.
+			return View::make('error_unauthorized');
+		}
+
 		$event_categories = EventCategories::get(['id','parent_id','name']);
 
 		$long_description = $event->long_description;
@@ -332,9 +469,9 @@ class ManageController extends BaseController {
 			$long_description .= $input['section_title'][$i] . '||ttl||' . $input['section_description'][$i];
 		}
 
+		if(strlen($input['event_code'])==3)
+			$event->event_code = $input['event_code'];
 
-		
-		$event->event_code = $input['event_code'];
 		$event->name = $input['name'];
 		$event->category_id = $input['category_id'];
 		$event->short_description = $input['short_description'];
@@ -458,8 +595,29 @@ class ManageController extends BaseController {
 	}
 
 
+	public function eventsRedirectToEdit(){
+		$manager_event = Auth::manager()->get()->event_code;
+
+		$event = Events::where('event_code','=',$manager_event)->get();
+
+		if($event->count()>0)
+			return Redirect::route('action_edit_event', $event->first()->id);
+		else
+			return Redirect::route('manager_dashboard');
+	}
+
+
+	public function editHomepage(){
+
+		return View::make('edit_homepage');
+	}
+
+
 	private function getRoleName($role){
 		switch ($role) {
+			//DO NOT CHANGE ORDERS/NUMBERS FOR EXISTING ROLES
+			//THESE ARE HARD CODED IN SOME PLACES.
+			//IF YOU NEED MORE ROLES, CREATE THEM.
 
 			case 1:
 				return 'Website Admin'; //Edit details of event, Edit homepage, add news.
@@ -489,15 +647,23 @@ class ManageController extends BaseController {
 				return 'Printing Only'; //Print List, Results etc.
 				break;
 
+			case 8:
+				return 'Proofreader'; //Edit details of an event, Print List
+				break;
+
 			case 21:
 				return 'Super Admin'; //All features
 				break;
 			
 
 			default:
-				return 'Unknown'; //Unknown number in role.
+				return 'Unknown'; //Unknown number in role, shouldn't occur.
 				break;
 		}
+	}
 
+	public function errorUnauthorized()
+	{
+		return View::make('error_unauthorized');
 	}
 }

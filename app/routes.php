@@ -81,6 +81,16 @@ Route::group(array(
 			'uses'=> 'ManageController@postLogin',
 			));
 
+		Route::get('signup', array(
+			'as' => 'manager_signup',
+			'uses'=> 'ManageController@signup',
+			));
+
+		Route::post('signup', array(
+			'before' => 'csrf',
+			'uses'=> 'ManageController@postSignup',
+			));
+
 		Route::get('logout', array(
 			'as' => 'manager_logout',
 			'uses'=> 'ManageController@logout',
@@ -100,74 +110,109 @@ Route::group(array(
 	    	'uses'=> 'ManageController@index'
 	    	));
 
+	    Route::get('error', array(
+	    	'as' => 'error_unauthorized',
+	    	'uses'=> 'ManageController@errorUnauthorized'
+	    	));
+
 	    Route::get('managers', array(
+	    	'before' => 'role.edit_managers',
 	    	'as' => 'manager_managers',
 	    	'uses'=> 'ManageController@managers'
 	    	));
 
 	    Route::post('managers/new', array(
+	    	'before' => 'role.edit_managers',
 	    	'as' => 'action_new_manager',
 	    	'before' => 'csrf',
 	    	'uses'=> 'ManageController@managersNew'
 	    	));
 
 
+	    Route::get('managers/change_status', array(
+	    	'before' => 'role.edit_managers',
+	    	'as' => 'action_change_manager_status',
+	    	'uses'=> 'ManageController@managersChangeStatus'
+	    	));
+
+
 	    Route::get('event_categories', array(
+	    	'before' => 'role.event_categories',
 	    	'as' => 'manager_event_categories',
 	    	'uses'=> 'ManageController@eventCategories'
 	    	));
 
 
 	    Route::post('event_categories/add', array(
+	    	'before' => 'role.event_categories',
 	    	'as' => 'action_add_event_category',
 	    	'uses'=> 'ManageController@eventCategoriesNew'
 	    	));
 
 
 	    Route::get('event_categories/delete/{id}', array(
+	    	'before' => 'role.event_categories',
 	    	'as' => 'action_delete_event_category',
 	    	'uses'=> 'ManageController@eventCategoriesDelete'
-	    	));
+	    	))->where('id','[0-9]+');
 
+
+
+
+	    Route::get('edit_homepage', array(
+	    	'before' => 'role.homepage',
+	    	'as' => 'manager_edit_homepage',
+	    	'uses'=> 'ManageController@editHomepage'
+	    	));
+    
 
 
 
 	    Route::get('events', array(
+	    	'before' => 'role.event_edit',
 	    	'as' => 'manager_events',
 	    	'uses'=> 'ManageController@events'
 	    	));
 
 	    Route::get('events/new', array(
+	    	'before' => 'role.events',
 	    	'as' => 'action_new_event',
 	    	'uses'=> 'ManageController@eventsNew'
 	    	));
 
 	    Route::get('events/change_status', array(
+	    	'before' => 'role.events',
 	    	'as' => 'action_change_event_status',
 	    	'uses'=> 'ManageController@eventsChangeStatus'
 	    	));
 
 	    Route::get('events/{id}', array(
+	    	'before' => 'role.event_edit',
 	    	'as' => 'action_edit_event',
 	    	'uses'=> 'ManageController@eventsEdit'
 	    	))->where('id','[0-9]+');
 
 
 	    Route::post('events/save', array(
+	    	'before' => 'role.event_edit',
 	    	'as' => 'action_save_event',
 	    	'uses'=> 'ManageController@eventsSave'
 	    	));
 
 
+	    Route::get('events/edit', array(
+	    	'before' => 'role.event_edit',
+	    	'as' => 'action_event_redirect_to_edit',
+	    	'uses'=> 'ManageController@eventsRedirectToEdit'
+	    	));
+
+
 	    Route::post('events/upload_image', array(
+	    	'before' => 'role.event_edit',
 	    	'as' => 'action_upload_image',
 	    	'uses'=> 'ManageController@eventsUploadImage'
 	    	));
 
-	    Route::get('events/upload_image', array(
-	    	'as' => 'action_upload_image',
-	    	'uses'=> 'ManageController@eventsUploadImage'
-	    	));
 	}
 );
 
@@ -175,7 +220,7 @@ Route::group(array(
 
 Route::get('/user', array('before'=>'auth.user', function()
 {
-	echo 'shit';
+	echo 'Work in progress.';
 	// return Auth::user()->get();
 }));
 

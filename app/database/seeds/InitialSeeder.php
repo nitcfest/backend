@@ -22,10 +22,7 @@ class InitialSeeder extends Seeder {
             ['name' => 'Events', 'parent_id' => 0],
             ['name' => 'Workshops', 'parent_id' => 0],
             ['name' => 'Proshows', 'parent_id' => 0],
-
             ['name' => 'General', 'parent_id' => 1],
-            ['name' => 'Literay', 'parent_id' => 1],
-            ['name' => 'Dance', 'parent_id' => 1],
         );
         DB::table('event_categories')->insert($event_categories);
 
@@ -36,8 +33,11 @@ class InitialSeeder extends Seeder {
             'category_id' => 4,
             'name' => 'Sample Event',
             'tags' => 'dolor sit amet',
+            'event_email' => 'sample_event',
+            'contacts' => 'Boss||@||+91-9898123456||@||boss@ragam.org.in||@||http://www.facebook.com/boss||con|| ||@|| ||@|| ||@|| ||con|| ||@|| ||@|| ||@|| ',
+            'prizes' => "First Prize:\r\nSecond Prize:\r\nThird Prize:",
             'short_description' => 'This is a short short description of a sample event.',
-            'long_description' => 'This is the long description of a sample event.',
+            'long_description' => 'Introduction||ttl||This is a sample introduction.',
             'team_min' => 1,
             'team_max' => 1,
             'validated' => false,

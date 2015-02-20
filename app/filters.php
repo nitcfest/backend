@@ -53,6 +53,47 @@ Route::filter('auth.manager.basic', function()
 });
 
 
+Route::filter('role.edit_managers', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+Route::filter('role.event_categories', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
+
+
+Route::filter('role.events', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[1,3,5,8,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
+Route::filter('role.event_edit', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[1,2,3,5,6,8,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
+Route::filter('role.homepage', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[1,3,5,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
 
 Route::filter('auth.user', function()
 {

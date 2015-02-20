@@ -18,7 +18,7 @@ Login - CMS
                 	<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                     <fieldset>
                         <div class="form-group">
-                            <input tabindex="1" class="form-control" placeholder="Email" name="email" type="email" autofocus>
+                            <input tabindex="1" class="form-control" placeholder="Email" name="email" type="email" value="{{Input::old('email') ?: ''}}" autofocus>
                         </div>
                         <div class="form-group">
                             <input tabindex="2" class="form-control" placeholder="Password" name="password" type="password" value="">
@@ -27,15 +27,16 @@ Login - CMS
                         <button tabindex="3" type="submit" class="btn btn-lg btn-success btn-block">Login</button>
                     </fieldset>
                 </form>
+                <br>Not a user? <a href="{{ URL::route('manager_signup')}}">Sign up</a>.
 
                 @if (Session::get('error'))
-                    <br>
-                    <div class="alert alert-error alert-danger">{{{ Session::get('error') }}}</div>
+                    <br><br>
+                    <div class="alert alert-error alert-danger">{{ Session::get('error') }}</div>
                 @endif
 
                 @if (Session::get('notice'))
-                    <br>
-                    <div class="alert alert-info">{{{ Session::get('notice') }}}</div>
+                    <br><br>
+                    <div class="alert alert-info">{{ Session::get('notice') }}</div>
                 @endif
                 
             </div>

@@ -17,10 +17,10 @@ class AddEventsTable extends Migration {
 		    $table->increments('id');
 		    $table->string('event_code', 10)->unique();
 
-		   	$table->integer('category_id')->unsigned();
+		   	$table->integer('category_id')->unsigned()->nullable();
 		   	$table->foreign('category_id')->references('id')->on('event_categories');
 
-		   	$table->string('name', 100);
+		   	$table->string('name', 100)->nullable();
 
 		   	$table->string('tags', 1000)->nullable();
 		   	$table->string('event_email', 50)->nullable();

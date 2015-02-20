@@ -58,8 +58,8 @@
         <div class="col-md-4">
             <h3>Basic Details</h3>
             <div class="form-group">
-                <label>Event Code</label>
-                <input type="text" class="form-control" name="event_code" value="{{ $event->event_code }}" required>
+                <label>Event Code (3 characters)</label>
+                <input type="text" class="form-control" name="event_code" id="event_code" value="{{ $event->event_code }}" required>
             </div>
             <div class="form-group">
                 <label>Event Name</label>
@@ -113,7 +113,7 @@
             <?php $i=1 ?>
             @foreach($data->contacts as $contact)
             <div class="well">
-                <h4>Manager {{$i}}</h4>  
+                <h4>Manager {{$i}} @if($i!=1) (optional) @endif</h4>  
                 <div class="form-group">
                     <label>Name</label>
                     <input type="text" class="form-control" name="manager_name[]" value="{{$contact['name']}}" @if($i==1) required @endif >
@@ -123,12 +123,12 @@
                     <input type="text" class="form-control" name="manager_phone[]" value="{{$contact['phone']}}" @if($i==1) required @endif >
                 </div>
                 <div class="form-group">
-                    <label>Email</label>
-                    <input type="text" class="form-control" name="manager_email[]" value="{{$contact['email']}}" @if($i==1) required @endif >
+                    <label>Email (optional)</label>
+                    <input type="text" class="form-control" name="manager_email[]" value="{{$contact['email']}}" @if($i==1) @endif >
                 </div>
                 <div class="form-group">
-                    <label>Phone</label>
-                    <input type="text" class="form-control" name="manager_facebook[]" value="{{$contact['facebook']}}" @if($i==1) required @endif >
+                    <label>Facebook Link (optional)</label>
+                    <input type="text" class="form-control" name="manager_facebook[]" value="{{$contact['facebook']}}" @if($i==1) @endif >
                 </div>
             </div>
 
@@ -189,6 +189,11 @@
 
 <script>
     $(function() {
+
+        @if(Auth::manager()->get()->role==2)
+            $('#event_code').attr('readonly',true);
+        @endif
+
 
         $.fn.scrollTo = function (speed) {
             if (typeof(speed) == 'undefined')
