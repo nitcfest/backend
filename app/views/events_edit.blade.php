@@ -21,6 +21,15 @@
 @section('content')
 
 <form action="{{ URL::route('action_save_event') }}" method="POST" role="form">
+    
+    @if($page_type=='new')
+        <input type="hidden" name="current_id" value="new">
+    @else
+        <input type="hidden" name="current_id" value="{{$id}}">
+    @endif
+
+    {{Form::token()}}
+
     <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">
@@ -40,19 +49,18 @@
             <h3>Basic Details</h3>
             <div class="form-group">
                 <label>Event Code</label>
-                <input type="text" class="form-control" name="event_code" required>
+                <input type="text" class="form-control" name="event_code" value="{{ $event->event_code }}" required>
             </div>
             <div class="form-group">
                 <label>Event Name</label>
-                <input type="text" class="form-control" name="name" required>
+                <input type="text" class="form-control" name="name" value="{{ $event->name }}" required>
             </div>
             <div class="form-group">
                 <label>Event Category</label>
 
                 <select name="category_id" class="form-control">
                     @foreach ($event_categories as $category)
-                        <option value="{{ $category->id }}">
-                            @if($category->parent_id === 0) Root :: @endif {{ $category->name }}</option>    
+                            <option value="{{ $category->id }}" @if($category->id == $event->category_id) selected="selected" @endif>@if($category->parent_id === 0) Root :: @endif {{ $category->name }}</option>
                     @endforeach
                 </select>
 
@@ -60,32 +68,32 @@
             </div>
             <div class="form-group">
                 <label>Short Description</label>
-                <textarea class="form-control" rows="2" name="short_description" required></textarea>
+                <textarea class="form-control" rows="2" name="short_description" required>{{ $event->short_description }}</textarea>
             </div>
             <div class="form-group">
                 <label>Tags (seperate by comma, used for search)</label>
-                <textarea class="form-control" rows="3" name="tags"></textarea>
+                <textarea class="form-control" rows="3" name="tags">{{ $event->tags }}</textarea>
             </div>
 
             <div class="form-group">
                 <label>Min. Team Size (1 for individual)</label>
-                <input type="text" class="form-control" name="team_min" required>
+                <input type="text" class="form-control" name="team_min" value="{{ $event->team_min }}" required>
             </div>
 
             <div class="form-group">
                 <label>Max. Team Size (1 for individual)</label>
-                <input type="text" class="form-control" name="team_max" required>
+                <input type="text" class="form-control" name="team_max" value="{{ $event->team_max }}" required>
             </div>
 
             <div class="form-group">
                 <label>Prizes</label>
-                <textarea class="form-control" rows="4" name="prizes"></textarea>
+                <textarea class="form-control" rows="4" name="prizes">{{ $event->prizes }}</textarea>
             </div>
 
             <div class="form-group">
                 <label>Event Email (if available)</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" name="event_email">
+                    <input type="text" class="form-control" name="event_email" value="{{$event->email}}">
                     <div class="input-group-addon">{{'@'.Config::get('app.domain')}}</div>
                 </div>
             </div>
@@ -96,49 +104,52 @@
                 <h4>Manager 1</h4>  
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" name="manager1_name" required>
+                    <input type="text" class="form-control" name="manager1_name" value="{{$data->manager1_name}}" required>
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
-                    <input type="text" class="form-control" name="manager1_phone" required>
+                    <input type="text" class="form-control" name="manager1_phone" value="{{$data->manager1_phone}}" required>
                 </div>
             </div>
             <div class="well">
                 <h4>Manager 2 (optional)</h4>  
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" name="manager2_name">
+                    <input type="text" class="form-control" name="manager2_name" value="{{$data->manager2_name}}">
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
-                    <input type="text" class="form-control" name="manager2_phone">
+                    <input type="text" class="form-control" name="manager2_phone" value="{{$data->manager2_phone}}">
                 </div>
             </div>
             <div class="well">
                 <h4>Manager 3 (optional)</h4>  
                 <div class="form-group">
                     <label>Name</label>
-                    <input type="text" class="form-control" name="manager3_name">
+                    <input type="text" class="form-control" name="manager3_name" value="{{$data->manager3_name}}">
                 </div>
                 <div class="form-group">
                     <label>Phone</label>
-                    <input type="text" class="form-control" name="manager3_phone">
+                    <input type="text" class="form-control" name="manager3_phone" value="{{$data->manager3_phone}}">
                 </div>
             </div>
         </div>
         <div class="col-md-8">
             <h3>Event Description</h3><br>
             <div id="section-block-container">
-                <div class="section-block">
+
+                <?php $i=1; ?>
+                @foreach($data->sections as $section)
+                <div class="section-block" data-instance="{{$i}}">
                     <div class="section-editor well">
                         <div class="form-group">
                             <label>Section Title</label>
-                            <input type="text" class="form-control section-title" name="section_title[]" required>
+                            <input type="text" class="form-control section-title" name="section_title[]" value="{{ $section['title'] }}" required>
                         </div>  
                         <div class="form-group">
                             <label>Description</label>
                             <div class="editor-container">              
-                                <textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;" name="section_description[]" required></textarea>
+                                <textarea class="section-editor-textarea" placeholder="" style="width: 100%; height: 400px;" name="section_description[]" required>{{$section['text']}}</textarea>
                             </div>
                         </div>  
 
@@ -150,6 +161,10 @@
                         <div class="clearfix"></div> -->
                     </div>
                 </div>
+
+                <?php $i++; ?>
+                @endforeach
+
             </div>
 
             <button type="button" class="btn btn-info btn-lg" id="btn-add-section"><span class="glyphicon glyphicon-plus"></span> Add Section</button>
@@ -175,7 +190,6 @@
 <script>
     $(function() {
 
-
         $.fn.scrollTo = function (speed) {
             if (typeof(speed) == 'undefined')
                 speed = 1000;
@@ -198,13 +212,17 @@
                 "instance": 1,
                 "events": {
                         "load": function() { 
+                            //Hide intend and deintend options.
                             $('.wysihtml5-toolbar').find('.glyphicon-indent-right, .glyphicon-indent-left').parents('a').hide();
                         },
                 },
             };
 
-        $('.section-editor-textarea').wysihtml5(editor_settings);
-        
+        $('.section-block').each(function(index){
+            $(this).find('.section-editor-textarea').wysihtml5(editor_settings);
+            editor_settings.instance+=1;
+        });
+      
 
         $('#btn-add-section').on('click', function(event) {
             event.preventDefault();

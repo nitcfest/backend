@@ -258,6 +258,7 @@
 			var caretBookmark;
 
 			var insertImage = function() {
+
 				self.editor.currentView.element.focus();
 				if (caretBookmark) {
 				  self.editor.composer.selection.setBookmark(caretBookmark);
@@ -325,6 +326,7 @@
 					// Update "insert" button now
 					updateInsertBtn();
 
+					alert('try');
 					// Init file upload
 					$('#fileupload_'+ defaultOptions.instance).fileupload({
 						dataType: 'json',

@@ -184,22 +184,81 @@ class ManageController extends BaseController {
 	}
 
 	public function eventsNew(){
-
 		$event_categories = EventCategories::get(['id','parent_id','name']);
 
+		$event = new stdClass();
+		$event->event_code = 'XYZ';
+		$event->name = '';
+		$event->category_id = 0;
+		$event->short_description = '';
+		$event->tags = '';
+		$event->team_min = 1;
+		$event->team_max = 1;
+		$event->prizes = "First Prize:\nSecond Prize:\nThird Prize:";
+		$event->email = '';
+
+		//Process data from rows.
+		$data = new stdClass();
+		$data->manager1_name = '';
+		$data->manager1_phone = '';
+		$data->manager2_name = '';
+		$data->manager2_phone = '';
+		$data->manager3_name = '';
+		$data->manager3_phone = '';
+
+		$data->sections = array(
+			[
+				'title'=>'Introduction',
+				'text' =>'Lorem ipsum'
+			],
+			[
+				'title'=>'Boss',
+				'text' =>'dolor sit'
+			],
+			[
+				'title'=>'Heyya',
+				'text' =>''
+			],
+			);
+
 		return View::make('events_edit',array(
+			'event' => $event,  
+			'data' => $data,
 			'event_categories' => $event_categories,
 			'page_type' => 'new'
 			));
 	}
 
-	public function eventsEdit(){
-		return 'yo';
+	public function eventsEdit($id = NULL){
+
+		$event = Events::whereId($id)->first();
+		$event_categories = EventCategories::get(['id','parent_id','name']);
+
+		//Process data from rows.
+		$data = new stdClass();
+		$data->manager1_name = '';
+		$data->manager1_phone = '';
+		$data->manager2_name = '';
+		$data->manager2_phone = '';
+		$data->manager3_name = '';
+		$data->manager3_phone = '';
+
+		$data->sections = array(
+			'Introduction' => '',
+			);
+
+
+		return View::make('events_edit',array(
+			'event' => $event,
+			'data' => $data,
+			'event_categories' => $event_categories,
+			'page_type' => 'edit',
+			'id' => $id,
+			));
 	}
 
 	public function eventsSave(){
 		return Input::all();
-
 	}
 
 	public function eventsUploadImage(){
