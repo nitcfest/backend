@@ -612,6 +612,10 @@ class ManageController extends BaseController {
 		return View::make('edit_homepage');
 	}
 
+	public function testApi(){
+		return View::make('test_api');
+	}
+
 
 	private function getRoleName($role){
 		switch ($role) {

@@ -81,6 +81,10 @@ Route::group(array(
 			'uses'=> 'ManageController@postLogin',
 			));
 
+		Route::get('test_api', array(
+			'uses'=> 'ManageController@testApi',
+			));
+
 		Route::get('signup', array(
 			'as' => 'manager_signup',
 			'uses'=> 'ManageController@signup',
