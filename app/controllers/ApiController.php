@@ -53,7 +53,7 @@ class ApiController extends BaseController {
 
 		});
 
-		return $categories;
+		return Response::json($categories)->setCallback(Input::get('callback'));
 	}
 
 
@@ -91,11 +91,16 @@ class ApiController extends BaseController {
 					'facebook' => trim($parts[3]),
 					));
 		}
+
+
+		$event->prizes = str_replace("\n", '<br>', $event->prizes);
+
 								
 		$return_details = array(
+			'response' => 'success',
 			'event_code' => $event->event_code,
 			'category_id' => $event->category_id,
-			'name' => $event->event_name,
+			'name' => $event->name,
 			'tags' => $event->tags,
 			'event_email' => $event->event_email,
 			'prizes' => $event->prizes,
@@ -108,7 +113,8 @@ class ApiController extends BaseController {
 			'contacts' => $contacts_array,
 			);
 
-		return $return_details;
+
+		return Response::json($return_details)->setCallback(Input::get('callback'));
 	}
 
 
