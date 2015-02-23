@@ -87,7 +87,7 @@ class ManageController extends BaseController {
 
 		$manager->signup_data = Input::get('event_name').'||@||'.Input::get('category_id');
 
-		$manager->event_code = Input::get('event_code', NULL);
+		$manager->event_code = strtoupper(Input::get('event_code', NULL));
 		$manager->validated = false;
 
 		$manager->save();
@@ -209,7 +209,7 @@ class ManageController extends BaseController {
 		$manager->email = Input::get('email');
 		$manager->password = Hash::make(Input::get('password'));
 		$manager->role = Input::get('role');
-		$manager->event_code = Input::get('event_code',NULL);
+		$manager->event_code = strtoupper(Input::get('event_code',NULL));
 		$manager->validated = true;
 		$manager->save();
 
@@ -470,7 +470,7 @@ class ManageController extends BaseController {
 		}
 
 		if(strlen($input['event_code'])==3)
-			$event->event_code = $input['event_code'];
+			$event->event_code = strtoupper($input['event_code']);
 
 		$event->name = $input['name'];
 		$event->category_id = $input['category_id'];
