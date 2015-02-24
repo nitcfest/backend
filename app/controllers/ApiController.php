@@ -10,9 +10,7 @@ class ApiController extends BaseController {
 		return Response::json(array(
 			'status'=>'active',
 			'updates' => $updates,
-
 			));
-
 	}
 
 
