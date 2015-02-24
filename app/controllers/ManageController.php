@@ -354,7 +354,7 @@ class ManageController extends BaseController {
 		$data->sections = array(
 			[
 				'title'=>'Introduction',
-				'text' =>''
+				'text' =>'Enter the introduction here.'
 			]);
 
 		return View::make('events_edit',array(
@@ -472,9 +472,12 @@ class ManageController extends BaseController {
 		if(strlen($input['event_code'])==3)
 			$event->event_code = strtoupper($input['event_code']);
 
+		if(array_key_exists('short_description', $input)){
+			$event->short_description = $input['short_description'];
+		}
+
 		$event->name = $input['name'];
 		$event->category_id = $input['category_id'];
-		$event->short_description = $input['short_description'];
 		$event->long_description = $long_description;
 		$event->tags = $input['tags'];
 		$event->team_min = $input['team_min'];

@@ -78,7 +78,7 @@
             </div>
             <div class="form-group">
                 <label>Short Description</label>
-                <textarea class="form-control" rows="2" name="short_description" required>{{ $event->short_description }}</textarea>
+                <textarea class="form-control" rows="2" name="short_description">{{ $event->short_description }}</textarea>
             </div>
             <div class="form-group">
                 <label>Tags (seperate by comma, used for search)</label>
