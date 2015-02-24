@@ -148,7 +148,7 @@ Route::group(array(
 
 
 	    Route::post('event_categories/add', array(
-	    	'before' => 'role.event_categories',
+	    	'before' => 'role.event_categories|csrf',
 	    	'as' => 'action_add_event_category',
 	    	'uses'=> 'ManageController@eventCategoriesNew'
 	    	));
@@ -162,13 +162,32 @@ Route::group(array(
 
 
 
-
 	    Route::get('edit_homepage', array(
 	    	'before' => 'role.homepage',
 	    	'as' => 'manager_edit_homepage',
 	    	'uses'=> 'ManageController@editHomepage'
 	    	));
-    
+
+    	Route::get('edit_homepage/change_status', array(
+    		'before' => 'role.homepage',
+    		'as' => 'action_update_display_status',
+    		'uses'=> 'ManageController@editHomepageStatus'
+    		));
+
+
+    	Route::get('edit_homepage/delete', array(
+    		'before' => 'role.homepage',
+    		'as' => 'action_update_delete',
+    		'uses'=> 'ManageController@editHomepageDeleteUpdate'
+    		));
+
+    	Route::post('edit_homepage/add', array(
+    		'before' => 'role.homepage|csrf',
+    		'as' => 'action_homepage_add_update',
+    		'uses'=> 'ManageController@editHomepageAddUpdate'
+    		));
+
+
 
 
 
@@ -198,7 +217,7 @@ Route::group(array(
 
 
 	    Route::post('events/save', array(
-	    	'before' => 'role.event_edit',
+	    	'before' => 'role.event_edit|csrf',
 	    	'as' => 'action_save_event',
 	    	'uses'=> 'ManageController@eventsSave'
 	    	));

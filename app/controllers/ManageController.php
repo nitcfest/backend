@@ -612,8 +612,77 @@ class ManageController extends BaseController {
 
 	public function editHomepage(){
 
-		return View::make('edit_homepage');
+		$updates = Update::orderBy('created_at','desc')->get();
+
+		$updates->map(function($update){
+			$update->status = 'a';
+
+			if($update->displayed == 0)
+				$update->status = 'Not Shown';
+			else
+				$update->status = 'Shown';
+
+			return $update;
+		});
+
+		return View::make('edit_homepage', array('updates'=>$updates));
 	}
+
+
+	public function editHomepageStatus(){
+		$id = Input::get('id');
+		$to = Input::get('to');
+
+		$update = Update::whereId($id)->first();
+
+		if($to == 'show')
+			$update->displayed = true;
+		else if($to == 'hide')
+			$update->displayed = false;
+
+		$update->save();
+
+		Session::flash('success', 'Status updated.');
+		return Redirect::route('manager_edit_homepage');
+	}
+
+	public function editHomepageDeleteUpdate(){
+		$id = Input::get('id');
+
+		$update = Update::whereId($id);
+
+		if($update->count()>0)
+			$update->first()->delete();
+		else{
+			Session::flash('error', 'Could not delete update.');
+			return Redirect::route('manager_edit_homepage');			
+		}
+
+
+		Session::flash('success', 'Update deleted.');
+		return Redirect::route('manager_edit_homepage');
+	}
+
+
+	public function editHomepageAddUpdate(){
+
+		$text = Input::get('text');
+
+		if($text!=''){
+			$update = new Update;
+			$update->text = $text;
+			$update->displayed = true;	
+			$update->save();
+
+			Session::flash('success', 'Update added..');
+			return Redirect::route('manager_edit_homepage');
+		}
+
+		Session::flash('error', 'Update cannot be empty!');
+		return Redirect::route('manager_edit_homepage');
+
+	}
+
 
 	public function testApi(){
 		return View::make('test_api');

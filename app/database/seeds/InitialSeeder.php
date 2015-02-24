@@ -91,6 +91,16 @@ class InitialSeeder extends Seeder {
         );
         DB::table('team_members')->insert($team_member);    
 
+
+
+        DB::table('updates')->truncate();
+        $updates = array(
+            ['text' => 'This is a sample news update.', 'created_at' => date("Y-m-d G:i:s")],
+            ['text' => 'This is another sample news update.', 'created_at' => date("Y-m-d G:i:s")],
+        );
+        DB::table('updates')->insert($updates);
+
+
     }
  
 }
