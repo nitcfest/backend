@@ -5,18 +5,11 @@ class ApiController extends BaseController {
 
 	public function index()
 	{
+		$updates = Update::orderBy('created_at','desc')->where('displayed','=',true)->lists('text');
+
 		return Response::json(array(
 			'status'=>'active',
-			'contacts' => array(
-				'Cultural Secretary' => array('Abdul Wasih', '+91-1122334455', 'wasih@ragam.org.in'),
-				'Somebody' => array('Someone', '+91-1234567890', 'someone@ragam.org.in'),
-				),
-
-			'updates' => array(
-				'This is the latest message',
-				'This is somewhat new',
-				'This is the oldest'
-				),
+			'updates' => $updates,
 
 			));
 
