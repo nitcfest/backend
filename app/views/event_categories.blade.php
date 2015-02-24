@@ -77,7 +77,7 @@ Event Categories
                        <td>{{$category->type }}</td>
                        <td>{{$category->events }}</td>
                        <td>
-                            @if ($category->events == 0)
+                            @if ($category->events == 0 && $category->parent_id != 0)
                                 <a href="{{ URL::route('action_delete_event_category', $category->id) }}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete</a>
                             @endif
                         </td>
