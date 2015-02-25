@@ -26,6 +26,14 @@ Manage:
 
 */
 
+//Handle 404 errors.
+App::missing(function($exception)
+{
+	return View::make('404');
+});
+
+
+
 Route::get('/', function()
 {
 	return Redirect::away(Config::get('app.homepage'));
@@ -47,13 +55,23 @@ Route::group(array(
 	    	'uses'=> 'ApiController@event'
 	    	));
 
+
+
 	    Route::get('user', array(
 	    	'uses' => 'ApiController@user'
 	    	));
 
-	    Route::post('user/login', array(
+	    //Using GET temporarily to support JSONP to work locally.
+	    Route::get('user/login', array(
 	    	'uses' => 'ApiController@userPostLogin'
 	    	));
+
+	    //Using GET temporarily to support JSONP to work locally.
+	    Route::get('user/signup', array(
+	    	'uses' => 'ApiController@userSignup'
+	    	));
+
+
 
 	    Route::get('user/logout', array(
 	    	'uses' => 'ApiController@userLogout'
@@ -61,6 +79,12 @@ Route::group(array(
 
 	    Route::get('user/fb_login', array(
 	    	'uses' => 'ApiController@userFbLogin'
+	    	));
+
+
+	    //Search for college
+	    Route::get('colleges', array(
+	    	'uses' => 'ApiController@collegeSearch'
 	    	));
 	}
 );

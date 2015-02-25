@@ -49,8 +49,8 @@ class InitialSeeder extends Seeder {
 
         DB::table('colleges')->truncate();
         $college = array(
-            'name' => 'NIT Calicut',
-            'validated' => false,
+            'name' => 'National Institute of Technology, Calicut',
+            'validated' => 1,
             'created_at' => date("Y-m-d G:i:s"),
             'updated_at' => date("Y-m-d G:i:s"),
         );
@@ -69,6 +69,7 @@ class InitialSeeder extends Seeder {
             'created_at' => date("Y-m-d G:i:s"),
             'updated_at' => date("Y-m-d G:i:s"),
         );
+        
         DB::table('registrations')->insert($registration);      
 
 

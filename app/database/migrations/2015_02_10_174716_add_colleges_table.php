@@ -16,8 +16,7 @@ class AddCollegesTable extends Migration {
 		{	
 		    $table->increments('id');
 		    $table->string('name', 500);
-		    $table->boolean('validated')->default(false);
-
+		    $table->integer('validated')->default(0);
 		    $table->timestamps();
 		});
 	}

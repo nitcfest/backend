@@ -1,5 +1,14 @@
 <?php
 
+
+/*
+NOTE TO DEVELOPERS
+
+The setCallback(Input::get('callback')) is used on responses to allow for JSONP to work.
+This is required if the website front end is being developed locally while reading from the API on the server.
+
+*/
+
 class ApiController extends BaseController {
 
 
@@ -111,15 +120,33 @@ class ApiController extends BaseController {
 
 	public function user(){
 		if(Auth::user()->check()){
-			$id =  Auth::user()->get()->id;
-		}else{
-			if(Request::ajax())
-				return Response::json(['result'=>'fail','reason'=>'not_logged_in']);
-		    
-		    return Redirect::to(Config::get('app.homepage'));
-		}
+			$user =  Auth::user()->get();
 
-		return Registration::whereId($id)->with('college')->get(['email','name','phone','runtime_id','college_id']);
+
+			// return Registration::whereId($id)->with('college')->get(['email','name','phone','runtime_id','college_id']);
+	
+			$response = array(
+				'status' => 'logged_in',
+				'user' => array(
+					'name' => $user->name,
+					'email' => $user->email,
+					'phone' => $user->phone,
+					// 'college' => '',
+
+					'events' => array(
+						array(
+							'name' => 'Jump High',
+							'team_id' => 'JHI105',
+							'team' => 'ASD, PQW, ZLS',
+							),
+						)
+					)
+				);
+
+			return Response::json($response)->setCallback(Input::get('callback'));
+		}else{
+			return Response::json(['status'=>'not_logged_in'])->setCallback(Input::get('callback'));
+		}
 	}
 
 	public function userPostLogin(){
@@ -128,20 +155,36 @@ class ApiController extends BaseController {
 
 		if(Auth::user()->attempt(array('email' => $email, 'password' => $password)))
 		{
-			if(Request::ajax())
-				return Response::json(['result'=>'success']);
-		    
-		    return Redirect::intended(Config::get('app.homepage'));
+			$user =  Auth::user()->get();
+			$response = array(
+				'result' => 'success',
+				'user' => array(
+					'name' => $user->name,
+					'email' => $user->email,
+					'phone' => $user->phone,
+					// 'college' => '',
+
+					'events' => array(
+						array(
+							'name' => 'Jump High',
+							'team_id' => 'JHI105',
+							'team' => 'ASD, PQW, ZLS',
+							)
+						)
+					)
+				);
+
+
+			return Response::json($response)->setCallback(Input::get('callback'));
 		}
+
+		return Response::json(['result' => 'fail', 'reason' => 'invalid_credentials'])->setCallback(Input::get('callback'));
 	}
 
 	public function userLogout(){
 		Auth::user()->logout();
 
-		if(Request::ajax())
-			return Response::json(['result'=>'success']);
-
-		return Redirect::to(Config::get('app.homepage'));		
+		return Response::json(['result'=>'success'])->setCallback(Input::get('callback'));
 	}
 
 
@@ -231,6 +274,99 @@ class ApiController extends BaseController {
 			return Redirect::to( (string)$url );
 		}
 
+	}
+
+
+	public function userSignup(){
+		$rules = array(
+			'name' => 'required|min:3',
+			'email' => 'required|email|unique:registrations',
+			'password' => 'required|confirmed|min:4',
+			'college' => 'required|numeric|exists:colleges,id',
+			'hospitality_type' => 'required|in:0,1,2',
+			'phone' => 'max:15'
+			);
+
+		$validator = Validator::make(Input::all(), $rules);
+
+		if ($validator->fails())
+		{
+			$print = '';
+		    $messages = $validator->messages();
+
+		    foreach ($messages->all() as $message)
+		    {
+		    	$print.= $message."<br>";   
+		    }
+
+		    return Response::json(['result'=>'fail', 'error_messages'=>$print ])->setCallback(Input::get('callback'));
+		}
+
+		$registration = new Registration;
+		$registration->name = Input::get('name');
+		$registration->email = Input::get('email');
+		$registration->password = Hash::make(Input::get('password'));
+
+		$registration->college_id = Input::get('college');
+		$registration->phone = Input::get('phone');
+		$registration->hospitality_type = Input::get('hospitality_type');
+
+		$registration->save();
+
+
+		if(Auth::user()->attempt(array('email' => Input::get('email'), 'password' => Input::get('password'))))
+		{
+			$user =  Auth::user()->get();
+
+			$response = array(
+				'result' => 'success',
+				'user' => array(
+					'name' => $user->name,
+					'email' => $user->email,
+					'phone' => $user->phone,
+					// 'college' => '',
+
+					'events' => array(
+						array(
+							'name' => 'Jump High',
+							'team_id' => 'JHI105',
+							'team' => 'ASD, PQW, ZLS',
+							)
+						)
+					)
+				);
+
+
+			return Response::json($response)->setCallback(Input::get('callback'));
+		}
+
+		return Response::json(['result'=>'fail', 'error_messages'=>'There was an error during registration. Please try again.' ])->setCallback(Input::get('callback'));
+	}
+
+
+
+	public function collegeSearch(){
+		$query = Input::get('q', '');
+		$page = Input::get('page', 1);
+		
+		$page--;
+
+		if(strlen($query) >= 2){
+			$colleges = College::where('name','LIKE','%'.$query.'%')->whereValidated(true);
+			$total_count = $colleges->count();
+			$colleges = $colleges->skip($page*10)->take(10)->get(['id','name']);
+		}else{
+			$total_count = 0;
+			$colleges = [];
+			return Response::json([
+				'result' => 'too_small_query'
+				])->setCallback(Input::get('callback'));
+		}
+
+		return Response::json([
+			'total_count' => $total_count,
+			'colleges' => $colleges
+			])->setCallback(Input::get('callback'));
 	}
 
 
