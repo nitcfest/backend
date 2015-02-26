@@ -91,7 +91,7 @@ Route::group(array(
 	    	'uses' => 'ApiController@eventRegister'
 	    	));
 
-	    Route::get('event_register', array(
+	    Route::get('event_deregister', array(
 	    	'uses' => 'ApiController@eventDeregister'
 	    	));
 

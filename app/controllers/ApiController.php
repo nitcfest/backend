@@ -492,6 +492,55 @@ class ApiController extends BaseController {
 	}
 
 
+	public function eventDeregister(){
+		//If the user deregistering is the owner, the entire team is deleted.
+		//Else, only the team member is removed.
+
+		if(Auth::user()->check()){
+			$user =  Auth::user()->get();
+		}else{
+			return Response::json(['result'=>'fail', 'reason'=>'not_logged_in'])->setCallback(Input::get('callback'));
+		}
+
+		$event_code = Input::get('event_code','');
+
+		$event = Events::where('event_code','=',$event_code)->get();
+
+		if($event->count() == 0)
+			return Response::json(['result'=>'fail','reason'=>'no_event'])->setCallback(Input::get('callback'));
+
+		$event = $event->first();
+
+		$current_user_id = $user->id;
+
+
+		$query = TeamMember::where('registration_id','=', $current_user_id)
+					->with('team')
+					->whereHas('team', function($q) use($event_code){
+						    $q->where('event_code', '=', $event_code);
+						})
+					->get();
+
+		if($query->count() == 0 ){
+			return Response::json(['result'=>'fail','reason'=>'not_registered'])->setCallback(Input::get('callback'));					
+		}
+
+		$query = $query->first();
+		$team_id = $query->team->id;
+
+		if($query->team->owner_id == $current_user_id){
+			//Delete the entire team.
+			$team_members_deleted = TeamMember::where('team_id','=',$team_id)->delete();
+			$team_deleted = Team::whereId($team_id)->delete();
+		}else{
+			//Remove current user from team members for this team.
+			$team_members_deleted = TeamMember::where('team_id','=',$team_id)->where('registration_id','=',$current_user_id)->delete();
+		}			
+		
+		return Response::json(['result'=>'success'])->setCallback(Input::get('callback'));
+	}
+
+
 	public function userSearch(){
 
 		//Make sure user is logged in.
@@ -548,7 +597,6 @@ class ApiController extends BaseController {
 			'users' => $users
 			])->setCallback(Input::get('callback'));
 	}
-
 
 
 
@@ -622,6 +670,7 @@ class ApiController extends BaseController {
 				'name' => $member->team->event->name,
 				'event_code' => $member->team->event_code,
 				'team_code' => $member->team->event_code.$member->team->team_code,
+				'owner_id' => $member->team->owner_id,
 				'team_members' => $team_members
 				);
 
