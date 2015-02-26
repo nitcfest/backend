@@ -23,8 +23,8 @@ class AddTeamsTable extends Migration {
 		    $table->unique(array('event_code','team_code'));
 
 		    //Team owner registration id, add owner to team members separately.
-		    $table->integer('registration_id')->unsigned();
-		    $table->foreign('registration_id')->references('id')->on('registrations');
+		    $table->integer('owner_id')->unsigned();
+		    $table->foreign('owner_id')->references('id')->on('registrations');
 
 		    $table->timestamp('created_at');
 		});

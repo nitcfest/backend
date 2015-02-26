@@ -51,12 +51,15 @@ Route::group(array(
 	    	'uses'=> 'ApiController@events'
 	    	));
 
+	    //Gets event details, and whether user is registered for the event.
 	    Route::get('event/{code}', array(
 	    	'uses'=> 'ApiController@event'
 	    	));
 
 
 
+	    // Returns user details,
+	    // and details of registered events.
 	    Route::get('user', array(
 	    	'uses' => 'ApiController@user'
 	    	));
@@ -82,10 +85,33 @@ Route::group(array(
 	    	));
 
 
+
+	    //Handle event registration
+	    Route::get('event_register', array(
+	    	'uses' => 'ApiController@eventRegister'
+	    	));
+
+	    Route::get('event_register', array(
+	    	'uses' => 'ApiController@eventDeregister'
+	    	));
+
+
+
+
+
+
 	    //Search for college
 	    Route::get('colleges', array(
 	    	'uses' => 'ApiController@collegeSearch'
 	    	));
+
+
+	    //Search for registered users.
+	    Route::get('users', array(
+	    	'uses' => 'ApiController@userSearch'
+	    	));
+
+
 	}
 );
 

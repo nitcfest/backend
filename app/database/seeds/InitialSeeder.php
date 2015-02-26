@@ -78,7 +78,7 @@ class InitialSeeder extends Seeder {
             'event_code' => 'XYZ',
             'team_code' => 101,
 
-            'registration_id' => 1,
+            'owner_id' => 1,
             'created_at' => date("Y-m-d G:i:s"),
         );
         DB::table('teams')->insert($team);    
