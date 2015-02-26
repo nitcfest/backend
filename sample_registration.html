@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sample Registration</title>
+
+	<link href="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/css/select2.min.css" rel="stylesheet" />
+
+</head>
+<body>
+
+
+<div id="div-user-details" style="background:#CACFF7; border: 1px solid #000; display:none;"></div>
+<span id="user-messages"></span>
+
+<div id="div-login" style="display:none;">
+	<form action="" id="form-login" method="POST" role="form">
+		<h3>Have an account? Login.</h3>
+		<input type="email" name="email" placeholder="Your email address" required>
+		<br>
+		<input type="password" name="password" placeholder="Your password" required>
+		<br>		
+		<button type="submit" class="btn btn-primary">Submit</button>
+		<br>
+		<span id="login-messages"></span>
+	</form>
+
+	<h3>New user? <a href="#" id="action-signup">Register now</a>.</h3>
+</div>
+
+<div id="div-signup" style="display:none; width:300px;">
+	<form action="" id="form-signup" method="POST" role="form">
+		<input type="text" name="name" placeholder="Full name" style="width:100%;">
+		<br><br>
+		<input type="text" name="email" placeholder="Email address" style="width:100%;">
+		<br><br>
+		<input type="password" name="password" placeholder="Password" style="width:100%;">
+		<br><br>
+		<input type="password" name="password_confirmation" placeholder="Confirm password" style="width:100%;">
+		<br>	
+		<br>
+
+		<input type="text" name="phone" placeholder="Phone number" style="width:100%;">
+		<br><br>
+
+		<select name="college" id="college_select" style="width:100%;">
+			<option value="0">Loading...</option>
+		</select>
+		<br>
+		<br>
+		<br>
+
+		Do you need hospitality services during Ragam '15?<br><br>
+		<label>
+			<input type="radio" name="hospitality_type" value="0" checked="checked">
+			I do not require accomodation.
+		</label>
+
+		<br>
+
+		<label>
+			<input type="radio" name="hospitality_type" value="1">
+			I would like accomodation Type 1. (Sleeping mat)
+		</label>
+
+		<br>
+
+		<label>
+			<input type="radio" name="hospitality_type" value="2">
+			I would like accomodation Type 2. (Mattress)
+		</label>
+		<br>
+
+
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+
+</div>
+
+<span id="signup-messages"></span>
+
+<div id="div-event-register" style="display:none; width:500px;">
+	<h3>Register for an event (DEVELOPER'S VERSION)</h3>
+
+	<form action="" id="form-event-register" method="POST" role="form">
+
+		<input type="text" id="event_code" name="event_code" placeholder="Event Code"  style="width:100%;">
+		<br><br>
+
+
+		<strong>Add your team members (Show only if team size > 1)</strong>
+		<p>Click inside the text field below, type in a team members name or Ragam ID (The user should already be registered on the website) to search for the user. Click on the name to select as your team member. Similarly, add other team members. (You don't have to add yourself again)</p>
+
+
+		<select name="team_members" id="team_members_select" style="width:100%;">
+		</select>
+		<br>
+		<br>
+		<br>
+
+		<button type="submit" class="btn btn-primary">Submit</button>
+
+	</form>
+
+	<span id="event-register-messages"></span>
+	
+	<h3><a href="#" id="action-logout">Log out</a></h3>
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-beta.3/js/select2.min.js"></script>
+
+<script>
+	$(function() {
+
+		var base_url = 'http://localhost/www/elegant-ragam/public/api/';
+			
+		//This code should run everytime page is reloaded. It checks if the user is logged in.
+		var checkLoginStatus = function() {
+			
+			$.ajax({
+			  url: base_url + 'user',
+			  type: 'GET',
+			  dataType: 'jsonp',
+			  success: function(data, textStatus, xhr) {
+			  	if(data.status == 'logged_in'){
+
+			  		//Once logged in, a user object is returned.
+			  		//console.log the object for better understanding.
+			  		loggedInActions(data.user);			  		
+			  	}else{
+			  		//User is not logged in. Show login form.
+			  		loggedOutActions();
+			  	}
+
+			  },
+			  error: function(xhr, textStatus, errorThrown) {
+			  	console.log('Could not load status! Show some error and ask user to try reloading the page.');
+			  }
+			});
+
+		};
+
+
+		var loggedInActions = function(user) {
+			//Called only if user is logged in, and after successful logins/signups.
+
+			//Hide the login/signup features.
+			$('#div-login').hide();
+			$('#div-signup').hide();
+
+			$('#div-event-register').show();
+
+
+			// Clear team members field on login.
+			$('#team_members_select').val(null).trigger("change");
+			
+			//Change the code appropriately.
+			var event_data = '';
+
+			var start=true;
+			user.events.forEach(function(this_event){
+				
+				if(!start)
+					event_data+='<br>';
+
+				start=false;
+
+				event_data+=this_event.name + ' ('+this_event.team_members.length+' member(s) )';
+
+				if(this_event.owner_id == user.id)
+					event_data+=' || <a href="#" class="action-event-deregister" data-event_code="'+this_event.event_code+'">Delete Team (Deletes entire team)</a>';
+				else
+					event_data+=' || <a href="#" class="action-event-deregister" data-event_code="'+this_event.event_code+'">Leave Team (Does not delete team)</a>';
+			});
+
+
+			$('#div-user-details').html(
+				'Name: '+user.name+'<br>'+
+				'Email: '+user.email+'<br>'+
+				'Events Details: <br>'+event_data);
+
+			$('#div-user-details').slideDown();
+		};
+
+		var loggedOutActions = function(){
+			$('#div-event-register').hide();
+			$('#div-signup').hide();
+			$('#div-user-details').slideUp();
+
+			$('#div-login').show();
+		}
+
+		checkLoginStatus();
+
+
+		//On trying to login.
+		$('#form-login').submit(function(event) {
+			//Handle login form submit.
+
+			$.ajax({
+			  url: base_url + 'user/login',
+			  type: 'GET',
+			  dataType: 'jsonp',
+			  data: $('#form-login').serialize(),
+			  success: function(data, textStatus, xhr) {
+			  	if(data.result == 'success'){
+
+			  		//If success, clear the form.
+			  		$('#form-login input[name="email"]').val('');
+			  		$('#form-login input[name="password"]').val('');
+
+			  		//Once logged in, a user object is returned.
+			  		//console.log the object for better understanding.
+			  		loggedInActions(data.user);
+			  	}else{
+			  		$('#login-messages').html('Invalid email address/password.');
+			  		$('#form-login input[name="password"]').val('');
+			  	}
+			  },
+			  error: function(xhr, textStatus, errorThrown) {
+			  	console.log('Error trying to login. Ask user to try again.');
+			  }
+			});
+
+
+			//Return false disables page reload as we are working with ajax.
+			return false;
+		});
+
+
+		//For logout
+		$('#action-logout').click(function(event) {
+			event.preventDefault();
+
+			$.ajax({
+			  url: base_url + 'user/logout',
+			  type: 'GET',
+			  dataType: 'jsonp',
+			  success: function(data, textStatus, xhr) {
+			  	loggedOutActions();
+			  },
+			  error: function(xhr, textStatus, errorThrown) {
+			  	console.log('Error trying to log out.');
+			  }
+			});
+
+		});
+
+
+
+		//On clicking signup link
+		$('#action-signup').click(function(event) {
+			event.preventDefault();
+
+			$('#div-signup').slideDown();
+		});
+
+
+
+
+
+		// Uses Select2 for loading college name. 
+		//Refer https://select2.github.io/
+
+		function formatCollege (college) {
+		    if (college.loading) return 'Loading...';
+
+		    var markup =  '<div>'+college.name+'</div>';
+
+		    return markup;
+		  }
+
+		  function formatCollegeSelection (college) {
+		    return '<div style="height:28px;">'+ (college.name || '<span style="color:#787878">Select your college...</span>') +'</div>';
+		  }
+
+		//initialize the college select box
+		$("#college_select").select2({
+			ajax: {
+				url: "http://localhost/www/elegant-ragam/public/api/colleges",
+				dataType: 'jsonp',
+				delay: 250,
+				data: function (params) {
+					return {
+				        q: params.term,
+				        page: params.page
+				    	};
+				},
+				processResults: function (data, page) {
+			      return {
+			      	results: data.colleges
+			      };
+			  },
+			  cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			minimumInputLength: 2,
+			templateResult: formatCollege,
+			templateSelection: formatCollegeSelection,
+
+	
+
+		});
+
+
+
+		// On Signup form submit
+		$('#form-signup').submit(function(event) {
+
+			$.ajax({
+			  url: base_url + 'user/signup',
+			  type: 'GET',
+			  dataType: 'jsonp',
+			  data: $('#form-signup').serialize(),
+			  success: function(data, textStatus, xhr) {
+			  	if(data.result == 'success'){
+			  		$('#signup-messages').html('Signup complete. You may register for events.');
+
+			  		//If success, the user will be automatically logged in.
+			  		loggedInActions(data.user);
+			  	}else{
+			  		$('#signup-messages').html('Error signing up.<br>'+data.error_messages);
+			  	}
+			  },
+			  error: function(xhr, textStatus, errorThrown) {
+			  	console.log('Error signing up. Try again.');
+			  }
+			});
+
+			//Return false disables page reload as we are working with ajax.
+			return false;
+		});
+
+
+
+
+
+
+		// Uses Select2 for loading TEAM MEMBERS
+		//Refer https://select2.github.io/
+
+		function formatTeamMembers (user) {
+		    if (user.loading) return 'Loading...';
+
+		    var markup =  '<div>('+user.full_id+') '+user.name+'</div>';
+
+		    return markup;
+		  }
+
+		  function formatTeamMembersSelection (user) {
+		    return user.name;
+		  }
+
+		//initialize the team member select box.
+		$("#team_members_select").select2({
+			ajax: {
+				url: "http://localhost/www/elegant-ragam/public/api/users",
+				dataType: 'jsonp',
+				delay: 250,
+				data: function (params) {
+					return {
+				        q: params.term,
+				        page: params.page
+				    	};
+				},
+				processResults: function (data, page) {
+			      return {
+			      	results: data.users
+			      };
+			  },
+			  cache: true
+			},
+			escapeMarkup: function (markup) { return markup; },
+			minimumInputLength: 2,
+			templateResult: formatTeamMembers,
+			templateSelection: formatTeamMembersSelection,
+
+			placeholder : 'Team',
+			multiple:true,		
+			maxSelectionLength : 20//Maximum number of team members that can be selected.
+								 //Change this depending on team size!!!
+		});
+
+
+
+
+
+		// On Event Register form submit
+		$('#form-event-register').submit(function(event) {
+			$.ajax({
+			  url: base_url + 'event_register',
+			  type: 'GET',
+			  dataType: 'jsonp',
+			  data: {
+			  	'event_code' : $('#event_code').val(),
+			  	'team_members' : $('#team_members_select').val(),
+			  },
+			  success: function(data, textStatus, xhr) {
+				//This function updates the user profile with new event details.
+				checkLoginStatus();
+
+			  	if(data.result == 'success'){
+			  		$('#event-register-messages').html('Event registration successfull. Your team ID is '+data.team_code);
+			  		
+			  		// Clear team members field.
+			  		$('#team_members_select').val(null).trigger("change");
+
+			  	}else if(data.result == 'fail' && data.reason == 'not_logged_in'){
+			  		$('#event-register-messages').html('Please login before you register for events.');
+			  		//User may have logged out in another tab.
+			  		alert('Please login before you register for events.');
+			  		loggedOutActions();
+			  	}else if(data.result == 'fail' && data.reason == 'no_event'){
+			  		$('#event-register-messages').html('Cannot register for this event.');
+					//The event is not valid OR it has been invalidated.			  		
+			  	}else if(data.result == 'fail' && data.reason == 'already_registered'){
+			  		$('#event-register-messages').html('You are already registered for this event.');
+			  		//The current user is already registered.
+			  	}else if(data.result == 'fail' && data.reason == 'team_member_already_registered'){
+			  		//A team member in the selected team has already registered.
+			  		//The ID of the member is returned in data.existing_member
+			  		$('#event-register-messages').html(data.existing_member+' is already registered for this event.');
+			  	}else if(data.result == 'fail' && data.reason == 'team_too_big'){
+			  		$('#event-register-messages').html('Your team size is too big.');
+			  	}else if(data.result == 'fail' && data.reason == 'team_too_small'){
+			  		$('#event-register-messages').html('Your team size is too small.');
+			  	}
+
+
+
+			  },
+			  error: function(xhr, textStatus, errorThrown) {
+			  	console.log('Error during registration. Try again.');
+			  }
+			});
+
+			//Return false disables page reload as we are working with ajax.
+			return false;
+		});
+
+
+		$('#div-user-details').on('click', '.action-event-deregister', function(event) {
+			event.preventDefault();
+
+			var event_code = $(this).data('event_code');
+
+			$.ajax({
+			  url: base_url + 'event_deregister',
+			  type: 'GET',
+			  dataType: 'jsonp',
+			  data: {
+			  	'event_code' : event_code,
+			  },
+			  success: function(data, textStatus, xhr) {
+				//This function updates the user profile with new event details.
+			  	if(data.result == 'success'){
+			  		checkLoginStatus();
+			  		$('#user-messages').html('Event de-registered!');
+			  	}else if(data.result == 'fail' && data.reason == 'not_logged_in'){
+			  		$('#user-messages').html('Please login before you de-register events.');
+			  		//User may have logged out in another tab.
+			  		alert('Please login before you de-register events.');
+			  		loggedOutActions();
+			  	}else if(data.result == 'fail' && data.reason == 'no_event'){
+			  		$('#user-messages').html('Cannot deregister this event.');
+			  	}else if(data.result == 'fail' && data.reason == 'not_registered'){
+			  		$('#user-messages').html('Not registered for this event.');
+			  	}
+
+			  },
+			  error: function(xhr, textStatus, errorThrown) {
+			  	console.log('Error during de-registering. Try again.');
+			  }
+			});
+
+		});
+
+	
+
+
+
+
+
+	});	
+</script>
+
+
+</body>
+</html>

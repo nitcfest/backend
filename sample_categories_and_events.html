@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Test Response</title>
+	<title>Sample Categories/Events</title>
 
 </head>
 <body>
@@ -21,8 +21,8 @@
 	<script>
 		$(function() {
 
-			var base_url = 'http://www.ragam.org.in/2015/cms/api/';
-			// var base_url = 'http://localhost/www/elegant-ragam/public/api/'
+			// var base_url = 'http://www.ragam.org.in/2015/cms/api/';
+			var base_url = 'http://localhost/www/elegant-ragam/public/api/';
 				
 			$('#load').on('click', function(event) {
 				event.preventDefault();
@@ -69,11 +69,32 @@
 				  dataType: 'jsonp',
 				  success: function(data, textStatus, xhr) {
 				  	if(data.response == 'success'){
+				  		team_members = '';
+
+				  		if(data.registration.status == 'registered'){
+				  			//if User is registered, get names of team members?
+
+				  			var start=true;
+				  			data.registration.team_members.forEach(function(member){
+				  				if(!start)
+				  					team_members+=', ';
+
+				  				start = false;
+
+				  				team_members+=member.name+' ('+'RAG'+member.id+')'; 
+				  			});
+				  		}
+
 				  		$('.event').html(
 				  			data.name+'<br>'+
 				  			data.event_email+'@ragam.org.in<br>'+
-				  			data.short_description+'<br>'
+				  			data.short_description+'<br>'+
+
+				  			'<br><br><strong>Registration Status:</strong>'+data.registration.status+
+				  			'<br>Team Members: '+ team_members+
+				  			'<br>Team Code:'+data.registration.team_code
 				  			);
+
 
 						//etc.			  		
 
