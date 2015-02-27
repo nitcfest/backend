@@ -112,6 +112,9 @@ class ManageController extends BaseController {
 		$events_count = Events::where('validated','=',true)->count();
 		$managers_count = Manager::where('validated','=',true)->count();
 
+		$teams_count = Team::count();
+		$registrations_count = Registration::count();
+
 		$manager = Auth::manager()->get();
 
 		if($manager->role == 2 && $manager->event_code!=''){
@@ -149,7 +152,13 @@ class ManageController extends BaseController {
 
 
 
-		return View::make('dashboard', array('events_count'=>$events_count, 'managers_count'=>$managers_count, 'event_code'=>$manager->event_code ));
+		return View::make('dashboard', array(
+			'events_count'=>$events_count, 
+			'managers_count'=>$managers_count, 
+			'event_code'=>$manager->event_code,
+			'teams_count' => $teams_count,
+			'registrations_count' => $registrations_count,
+			));
 	}
 
 	public function managers()
@@ -682,6 +691,48 @@ class ManageController extends BaseController {
 		return Redirect::route('manager_edit_homepage');
 
 	}
+
+
+	public function verifyColleges(){
+		$colleges = College::orderBy('created_at','desc')->whereValidated(0)->get();
+
+		return View::make('verify_colleges', array('colleges'=>$colleges));
+	}
+
+	public function verifyCollegesStatus(){
+		$id = Input::get('id');
+		$to = Input::get('to');
+
+		$college = College::whereId($id)->whereValidated(0)->first();
+
+		if($to == 'validate'){
+			$college->validated = 1;
+			Session::flash('success', 'College validated. Users can now register with this college.');
+		}else if($to == 'block'){
+			$college->validated = -1;
+			Session::flash('success', 'College blocked. It cannot be added again by users.');
+		}
+
+		$college->save();
+
+		return Redirect::route('manager_verify_colleges');
+	}
+
+
+	public function studentRegistrations(){
+		$registrations = Registration::orderBy('id','asc')->get();
+
+		return View::make('student_registrations', array('registrations'=>$registrations));
+	}
+
+
+	public function eventRegistrations(){
+		$teams = Team::with('event','team_members')->orderBy('event_code','asc')->orderBy('team_code','asc')->get();
+
+		return View::make('event_registrations', array('registrations'=>$teams));
+	}
+
+
 
 
 	public function testApi(){

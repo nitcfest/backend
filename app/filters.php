@@ -93,6 +93,14 @@ Route::filter('role.homepage', function()
 	}
 });
 
+Route::filter('role.colleges', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[1,8,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
 
 
 Route::filter('auth.user', function()

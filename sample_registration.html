@@ -48,6 +48,17 @@
 		<br>
 		<br>
 		<br>
+		Don't see your college? <a href="#" id="action-show-add-college">Add it here</a>. 
+		<div id="div-add-college" style="display:none;">
+			(You'll be able to register only after your college is verified by the Ragam team.)<br>
+			<input type="text" id="name_new_college" placeholder="Full college name" style="width:100%;">
+			<button type="button" id="action-add-college">Add College</button>
+
+			<br>
+			<span id="add-college-messages"></span>
+		</div>
+
+		<br><br>
 
 		Do you need hospitality services during Ragam '15?<br><br>
 		<label>
@@ -282,7 +293,7 @@
 		//initialize the college select box
 		$("#college_select").select2({
 			ajax: {
-				url: "http://localhost/www/elegant-ragam/public/api/colleges",
+				url: base_url + "colleges",
 				dataType: 'jsonp',
 				delay: 250,
 				data: function (params) {
@@ -306,6 +317,44 @@
 	
 
 		});
+
+
+		//Handle adding colleges
+
+		$("#action-show-add-college").on('click', function(event) {
+			event.preventDefault();
+            $('#div-add-college').slideDown();
+		});
+
+
+		$('#action-add-college').on('click', function(event) {
+			event.preventDefault();
+
+            var college_name = $('#name_new_college').val();
+
+            $.ajax({
+              url: base_url + 'colleges/new',
+              type: 'GET',
+              dataType: 'jsonp',
+              data: { college_name: college_name },
+              success: function(data, textStatus, xhr) {
+              	if(data.result == 'success'){
+              		$('#add-college-messages').html('Your college has been added and is pending validation.');
+              	}else if(data.reason == 'invalid_name'){
+              		$('#add-college-messages').html('Invalid college name.');
+              	}else if(data.reason == 'name_exists'){
+              		$('#add-college-messages').html('The college name you entered already exists OR is too generic. Try entering the specific college name. If this name has just been added, it might be pending validation.');
+              	}
+              },
+              error: function(xhr, textStatus, errorThrown) {
+              	console.log('Error adding college. Try again.');
+              }
+            });
+		});
+
+
+
+
 
 
 
@@ -359,7 +408,7 @@
 		//initialize the team member select box.
 		$("#team_members_select").select2({
 			ajax: {
-				url: "http://localhost/www/elegant-ragam/public/api/users",
+				url: base_url + "users",
 				dataType: 'jsonp',
 				delay: 250,
 				data: function (params) {

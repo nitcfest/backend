@@ -102,7 +102,14 @@ Route::group(array(
 
 	    //Search for college
 	    Route::get('colleges', array(
+	    	'as' => 'api_college_search',
 	    	'uses' => 'ApiController@collegeSearch'
+	    	));
+
+
+	    //New College
+	    Route::get('colleges/new', array(
+	    	'uses' => 'ApiController@collegeNew'
 	    	));
 
 
@@ -236,6 +243,33 @@ Route::group(array(
     		'as' => 'action_homepage_add_update',
     		'uses'=> 'ManageController@editHomepageAddUpdate'
     		));
+
+
+
+    	Route::get('verify_colleges', array(
+	    	'before' => 'role.colleges',
+	    	'as' => 'manager_verify_colleges',
+	    	'uses'=> 'ManageController@verifyColleges'
+	    	));
+
+    	Route::get('verify_colleges/change_status', array(
+    		'before' => 'role.colleges',
+    		'as' => 'action_update_college_status',
+    		'uses'=> 'ManageController@verifyCollegesStatus'
+    		));
+
+    	Route::get('student_registrations', array(
+	    	'before' => 'role.student_registrations',
+	    	'as' => 'manager_student_registrations',
+	    	'uses'=> 'ManageController@studentRegistrations'
+	    	));
+
+    	Route::get('event_registrations', array(
+	    	'before' => 'role.student_registrations',
+	    	'as' => 'manager_event_registrations',
+	    	'uses'=> 'ManageController@eventRegistrations'
+	    	));
+
 
 
 

@@ -50,6 +50,38 @@ CMS Manager
         </div>
     </div>
 </div>
+<div class="row">
+    <div class="col-lg-4 col-md-6">
+        <div class="panel panel-yellow">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-trophy fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{$teams_count}}</div>
+                        <div class="big">Event Registrations</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6">
+        <div class="panel panel-red">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-users fa-5x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        <div class="huge">{{$registrations_count}}</div>
+                        <div class="big">Students Registered</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endif
 <!-- /.row -->
 <div class="row">

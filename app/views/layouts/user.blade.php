@@ -103,6 +103,24 @@
                         @endif
 
 
+                        @if(in_array(Auth::manager()->get()->role,[1,8,21]))
+                        <li>
+                            <a href="{{ URL::route('manager_verify_colleges') }}"><i class="fa fa-fw fa-lg fa-university" style="vertical-align: middle;"></i> Verify Colleges</a>
+                        </li>
+                        @endif
+
+
+                        @if(in_array(Auth::manager()->get()->role,[3,5,7,21]))
+                        <li>
+                            <a href="{{ URL::route('manager_student_registrations') }}"><i class="fa fa-fw fa-lg fa-users" style="vertical-align: middle;"></i> Student Registrations</a>
+                        </li>
+                        @endif
+
+                        @if(in_array(Auth::manager()->get()->role,[3,5,7,21]))
+                        <li>
+                            <a href="{{ URL::route('manager_event_registrations') }}"><i class="fa fa-fw fa-lg fa-trophy" style="vertical-align: middle;"></i> Event Registrations</a>
+                        </li>
+                        @endif
 
 
                         

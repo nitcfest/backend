@@ -21,8 +21,8 @@
 	<script>
 		$(function() {
 
-			// var base_url = 'http://www.ragam.org.in/2015/cms/api/';
-			var base_url = 'http://localhost/www/elegant-ragam/public/api/';
+			var base_url = 'http://www.ragam.org.in/2015/cms/api/';
+			// var base_url = 'http://localhost/www/elegant-ragam/public/api/';
 				
 			$('#load').on('click', function(event) {
 				event.preventDefault();
@@ -91,8 +91,8 @@
 				  			data.short_description+'<br>'+
 
 				  			'<br><br><strong>Registration Status:</strong>'+data.registration.status+
-				  			'<br>Team Members: '+ team_members+
-				  			'<br>Team Code:'+data.registration.team_code
+				  			'<br>Team Members (for current user): '+ team_members+
+				  			'<br>Team Code (for current user):'+ (data.registration.team_code || '')
 				  			);
 
 

@@ -292,7 +292,7 @@ class ApiController extends BaseController {
 			'name' => 'required|min:3',
 			'email' => 'required|email|unique:registrations',
 			'password' => 'required|confirmed|min:4',
-			'college' => 'required|numeric|exists:colleges,id',
+			'college' => 'required|numeric|exists:colleges,id,validated,1',
 			'hospitality_type' => 'required|in:0,1,2',
 			'phone' => 'max:15'
 			);
@@ -356,13 +356,32 @@ class ApiController extends BaseController {
 	public function collegeSearch(){
 		$query = Input::get('q', '');
 		$page = Input::get('page', 1);
+
+		$show_invalid = Input::get('show_invalid', false);
 		
 		$page--;
 
 		if(strlen($query) >= 2){
-			$colleges = College::where('name','LIKE','%'.$query.'%')->whereValidated(true);
+
+			if($show_invalid)
+				$colleges = College::where('name','LIKE','%'.$query.'%');
+			else
+				$colleges = College::where('name','LIKE','%'.$query.'%')->whereValidated(true);
+
 			$total_count = $colleges->count();
-			$colleges = $colleges->skip($page*10)->take(10)->get(['id','name']);
+			$colleges = $colleges->skip($page*10)->take(10)->get(['id','name','validated']);
+
+			if($show_invalid){
+				$colleges->map(function($college){
+					if($college->validated == -1)
+						$college->status = 'Blocked';
+					else
+						$college->status = '';
+
+					return $college;
+				});
+			}
+
 		}else{
 			$total_count = 0;
 			$colleges = [];
@@ -375,6 +394,27 @@ class ApiController extends BaseController {
 			'total_count' => $total_count,
 			'colleges' => $colleges
 			])->setCallback(Input::get('callback'));
+	}
+
+
+	public function collegeNew(){
+		$college_name = Input::get('college_name', '');
+
+		if(strlen($college_name)<=3 || strlen($college_name)>80 )
+			return Response::json(['result'=>'fail', 'reason'=>'invalid_name'])->setCallback(Input::get('callback'));			
+
+		$existing = College::where('name', 'LIKE', '%'.$college_name.'%');
+		
+		if($existing->count()>0)
+			return Response::json(['result'=>'fail', 'reason'=>'name_exists'])->setCallback(Input::get('callback'));			
+		
+		$college = new College;
+		$college->name = $college_name;
+		$college->validated = 0;
+
+		$college->save();	
+
+		return Response::json(['result'=>'success'])->setCallback(Input::get('callback'));			
 	}
 
 
@@ -487,7 +527,7 @@ class ApiController extends BaseController {
 				$team_member->save();
 			}
 
-			return Response::json(['result'=>'success','team_code'=>Config::get('app.id_prefix').$team->team_code])->setCallback(Input::get('callback'));
+			return Response::json(['result'=>'success','team_code'=>$team->event_code.$team->team_code])->setCallback(Input::get('callback'));
 		}
 	}
 
