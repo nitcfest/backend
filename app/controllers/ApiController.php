@@ -357,21 +357,21 @@ class ApiController extends BaseController {
 		$query = Input::get('q', '');
 		$page = Input::get('page', 1);
 
-		$show_invalid = Input::get('show_invalid', false);
+		$show_admin = Input::get('show_admin', false);
 		
 		$page--;
 
 		if(strlen($query) >= 2){
 
-			if($show_invalid)
-				$colleges = College::where('name','LIKE','%'.$query.'%');
+			if($show_admin)
+				$colleges = College::where('name','LIKE','%'.$query.'%')->where('validated','!=', 0);
 			else
-				$colleges = College::where('name','LIKE','%'.$query.'%')->whereValidated(true);
+				$colleges = College::where('name','LIKE','%'.$query.'%')->whereValidated(1);
 
 			$total_count = $colleges->count();
 			$colleges = $colleges->skip($page*10)->take(10)->get(['id','name','validated']);
 
-			if($show_invalid){
+			if($show_admin){
 				$colleges->map(function($college){
 					if($college->validated == -1)
 						$college->status = 'Blocked';

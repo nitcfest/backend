@@ -119,7 +119,7 @@ Verify Colleges
                     return {
                         q: params.term,
                         page: params.page,
-                        show_invalid: true,
+                        show_admin: true,
                         };
                 },
                 processResults: function (data, page) {
