@@ -468,7 +468,7 @@ class ApiController extends BaseController {
 			$team_member->save();
 
 
-			return Response::json(['result'=>'success','team_code'=>Config::get('app.id_prefix').$team->team_code])->setCallback(Input::get('callback'));	
+			return Response::json(['result'=>'success','team_code'=>$team->event_code.$team->team_code])->setCallback(Input::get('callback'));	
 
 		}else{
 
