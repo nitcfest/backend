@@ -84,6 +84,17 @@ Route::group(array(
 	    	'uses' => 'ApiController@userFbLogin'
 	    	));
 
+	    Route::get('user/fb_complete', array(
+	    	'as' => 'api_fb_complete_get',
+	    	'uses' => 'ApiController@userFbComplete'
+	    	));
+
+	    Route::post('user/fb_complete', array(
+	    	'before' => 'csrf',
+	    	'as' => 'api_fb_complete_post',
+	    	'uses' => 'ApiController@userFbCompletePost'
+	    	));
+
 
 
 	    //Handle event registration
@@ -109,6 +120,7 @@ Route::group(array(
 
 	    //New College
 	    Route::get('colleges/new', array(
+	    	'as' => 'api_new_college',
 	    	'uses' => 'ApiController@collegeNew'
 	    	));
 

@@ -149,7 +149,7 @@ class ApiController extends BaseController {
 					'name' => $user->name,
 					'email' => $user->email,
 					'phone' => $user->phone,
-					'college' => $details->college->name,
+					'college' => $details->college?$details->college->name:'',
 					'events' => $events,
 				)
 			);
@@ -180,7 +180,7 @@ class ApiController extends BaseController {
 					'name' => $user->name,
 					'email' => $user->email,
 					'phone' => $user->phone,
-					'college' => $details->college->name,
+					'college' => $details->college?$details->college->name:'',
 					'events' => $events,
 				)
 			);
@@ -197,8 +197,9 @@ class ApiController extends BaseController {
 		return Response::json(['result'=>'success'])->setCallback(Input::get('callback'));
 	}
 
-
 	public function userFbLogin(){
+		//IF COLLEGE ID ALREADY EXISTS, USER HAS ALREADY REGISTERED USING EMAIL
+
 
 		$code = Input::get('code');
 		$fb = OAuth::consumer('Facebook');
@@ -209,10 +210,9 @@ class ApiController extends BaseController {
 			try {
 				$token = $fb->requestAccessToken($code);		
 			} catch (Exception $e) {
+				//A fatal error occured. 
+				//Die gracefully :P Go to homepage
 
-				if (Request::ajax())
-					return Response::json(['result'=>'fail','reason'=>'fb_exception']);
-				
 				return Redirect::intended(Config::get('app.homepage'));	
 			}
 
@@ -230,60 +230,138 @@ class ApiController extends BaseController {
 						if($user->count() > 0){
 							$user = $user->first();
 							$user->fb_uid = $result['id'];
-
-							if($user->name == '')
-								$user->name = $result['first_name'].' '.$result['last_name'];
+							$user->name = $result['first_name'].' '.$result['last_name'];
 
 							$user->save();
 
-							Auth::user()->login($user);
+							if($user->college_id == NULL){
+								//User needs to complete registration.
+								return View::make('fb_login_complete', array(
+									'name' => $user->name,
+									'email' => $user->email,
+									'fb_uid' => $user->fb_uid,
+									));
+							}else{
+								//User has already completed registration. Just log him in.
+								Auth::user()->login($user);
+								return Redirect::intended(Config::get('app.homepage'));
+							}
+						}else{
+							$user = new Registration;
+							$user->fb_uid = $result['id'];
+							$user->name = $result['first_name'].' '.$result['last_name'];
+							$user->email = $result['email'];
+							$user->save();
 
-							if(Request::ajax())
-								return Response::json(['result'=>'success']);
-							return Redirect::intended(Config::get('app.homepage'));
+							//User needs to complete registration.
+							return View::make('fb_login_complete', array(
+								'name' => $user->name,
+								'email' => $user->email,
+								'fb_uid' => $user->fb_uid,
+								));
 						}
 					}
 
 					//In case user has not registered before OR if FB doesn't provide email
 					$user = new Registration;
 					$user->fb_uid = $result['id'];
-					$user->email = $result['email'];
 					$user->name = $result['first_name'].' '.$result['last_name'];
 					$user->save();
 
-					Auth::user()->login($user);
-
-					if(Request::ajax())
-						return Response::json(['result'=>'success']);
-
-					return Redirect::intended(Config::get('app.homepage'));
+					//User needs to complete registration.
+					return View::make('fb_login_complete', array(
+						'name' => $user->name,
+						'email' => $user->email,
+						'fb_uid' => $user->fb_uid,
+						));
 				}else{
 					//User has already logged in with FB before.
-					Auth::user()->login($user->first());
-
-
-					if(Request::ajax())
-						return Response::json(['result'=>'success']);
-
-					return Redirect::intended(Config::get('app.homepage'));	
+					$user = $user->first();
+					if($user->college_id == NULL){
+						//User needs to complete registration.
+						return View::make('fb_login_complete', array(
+							'name' => $user->name,
+							'email' => $user->email,
+							'fb_uid' => $user->fb_uid,
+							));
+					}else{
+						//User has already completed registration. Just log him in.
+						Auth::user()->login($user);
+						return Redirect::intended(Config::get('app.homepage'));
+					}
 				}
 			}else{
 				//Some error occured and the result is not retrieved.
-				if(Request::ajax())
-					return Response::json(['result'=>'fail','reason'=>'no_result']);
-
 				return Redirect::intended(Config::get('app.homepage'));				
 			}
 		}else{
 			$url = $fb->getAuthorizationUri();
-
 
 			if(Request::ajax())
 				return Response::json(['result'=>'fail','reason'=>'requires_redirect','url'=>(string)$url]);
 
 			return Redirect::to( (string)$url );
 		}
+	}
 
+	public function userFbComplete(){
+		if(Session::get('fb_uid','') == ''){
+			//No FB UID specified. 
+			return Redirect::intended(Config::get('app.homepage'));				
+		}
+
+		return View::make('fb_login_complete', array(
+			'name' => Session::get('name',''),
+			'email' => Session::get('email',''),
+			'fb_uid' => Session::get('fb_uid',''),
+			));
+	}
+
+
+	public function userFbCompletePost(){
+		$rules = array(
+			'college' => 'required|numeric|exists:colleges,id,validated,1',
+			'hospitality_type' => 'required|in:0,1,2',
+			'phone' => 'max:15'
+			);
+
+		$validator = Validator::make(Input::all(), $rules);
+
+		if ($validator->fails())
+		{
+			$print = '';
+		    $messages = $validator->messages();
+
+		    foreach ($messages->all() as $message)
+		    {
+		    	$print.= $message."<br>";   
+		    }
+
+		    Session::flash('errors', $print);
+		    Session::flash('name', Input::get('name'));
+		    Session::flash('email', Input::get('email'));
+		    Session::flash('fb_uid', Input::get('fb_uid'));
+		    return Redirect::route('api_fb_complete_get')->withInput();		
+		}
+
+		$registration = Registration::where('fb_uid','=', Input::get('fb_uid'))->whereNull('college_id');
+
+		if($registration->count() == 0){
+			Session::flash('errors', 'There was an error during registration. Please try again later.');
+			return Redirect::route('api_fb_complete_get')->withInput();
+		}
+
+		$registration = $registration->get()->first();
+		$registration->college_id = Input::get('college');
+		$registration->phone = Input::get('phone');
+		$registration->hospitality_type = Input::get('hospitality_type');
+
+		$registration->save();
+
+
+		//User registration is complete. Log in.
+		Auth::user()->login($registration);
+		return Redirect::intended(Config::get('app.homepage'));	
 	}
 
 
@@ -340,7 +418,7 @@ class ApiController extends BaseController {
 					'name' => $user->name,
 					'email' => $user->email,
 					'phone' => $user->phone,
-					'college' => $details->college->name,
+					'college' => $details->college?$details->college->name:'',
 					'events' => $events,
 				)
 			);

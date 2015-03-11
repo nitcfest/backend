@@ -16,6 +16,10 @@
         @show
     </title>
 
+    @section('head')
+    @show
+
+
     <!-- Bootstrap Core CSS -->
     <link href="{{URL::to('/')}}/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 

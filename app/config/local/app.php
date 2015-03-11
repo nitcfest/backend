@@ -8,6 +8,8 @@ return array(
 	'domain' => 'ragam.org.in',
 	'timezone' => 'Asia/Kolkata',
 
+	'main_name' => 'Ragam \'15',
+
 	'id_prefix' => 'RAG',
 
 );
