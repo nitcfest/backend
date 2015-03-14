@@ -72,6 +72,10 @@ class ApiController extends BaseController {
 		$sections_array = array();
 		foreach ($sections as $section) {
 			$parts = preg_split('/\|\|ttl\|\|/m', $section, 2, PREG_SPLIT_NO_EMPTY);
+
+			//Remove \r\n in parts, rich text editor should already have used <br> where ever required.
+			$parts[1] = preg_replace("/(\r\n)+/", ' ', $parts[1]);
+
 			array_push($sections_array, array('title'=>$parts[0],'text'=>$parts[1]));
 		}
 
@@ -93,7 +97,7 @@ class ApiController extends BaseController {
 		}
 
 
-		$event->prizes = str_replace("\n", '<br>', $event->prizes);
+		$event->prizes = str_replace("\r\n", '<br>', $event->prizes);
 
 
 		//If user is logged in, tell whether user has registered for the event.	
