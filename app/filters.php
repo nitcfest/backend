@@ -95,11 +95,18 @@ Route::filter('role.homepage', function()
 
 Route::filter('role.colleges', function()
 {
-	if(!in_array(Auth::manager()->get()->role,[1,8,21])){
+	if(!in_array(Auth::manager()->get()->role,[1,3,8,21])){
 		return View::make('error_unauthorized');
 	}
 });
 
+
+Route::filter('role.student_registrations', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[1,3,4,5,6,7,8,21])){
+		return View::make('error_unauthorized');
+	}
+});
 
 
 

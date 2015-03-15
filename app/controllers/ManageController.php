@@ -762,6 +762,9 @@ class ManageController extends BaseController {
 			//THESE ARE HARD CODED IN SOME PLACES.
 			//IF YOU NEED MORE ROLES, CREATE THEM.
 
+
+			// [1,2,3,4,5,6,7,8,21]
+
 			case 1:
 				return 'Website Admin'; //Edit details of event, Edit homepage, add news.
 				break;
