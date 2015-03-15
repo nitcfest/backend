@@ -29,8 +29,7 @@ Verify Colleges
 
                 <br><br><br>
 
-                <p>Make sure you validate only the colleges that are real. Allow only full college names, not shortened ones. 
-                For example, do not validate "NIT Calicut", instead "National Institute of Technology Calicut" is preferred.</p>
+
             </div>
 
 
@@ -44,6 +43,11 @@ Verify Colleges
                 @endif
             </div>
         </div>
+
+        <p>Make sure you validate only the colleges that are real. Allow only full college names, not shortened ones. 
+        For example, do not validate "NIT Calicut", instead "National Institute of Technology Calicut" is preferred.</p>
+
+        <p>To change the name entered by the user to a better format before validation, you may edit the text input.</p>
 
 
         <table class="table table-striped table-hover">
@@ -60,13 +64,14 @@ Verify Colleges
                 <?php $i=0; ?>
                 @foreach ($colleges as $college)
                    <?php $i++; ?>
-                   <tr>
+                   <tr data-college-id="{{$college->id}}">
                        <td>{{$i}}</td>
                        <td>{{$college->created_at}}</td>
-                       <td>{{$college->name }}</td>
+                       <td><input type="text" class="form-control data-college-name" value="{{$college->name }}" style="width:100%;"></td>
                        <td>Not Validated</td>
                        <td>
-                        <a href="{{URL::route('action_update_college_status')}}?id={{$college->id}}&to=validate" class="btn btn-xs btn-success"><span class="glyphicon glyphicon-ok"></span> Validate</a>
+                        <a href="#" class="action-validate-college btn btn-xs btn-success"><span class="glyphicon glyphicon-ok"></span> Validate</a>
+
                         <a href="{{URL::route('action_update_college_status')}}?id={{$college->id}}&to=block" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-ban-circle"></span> Block</a>
                        </td>
                    </tr>
@@ -139,6 +144,20 @@ Verify Colleges
         
 
         });
+
+
+        $('.action-validate-college').on('click', function(event) {
+        	event.preventDefault();
+
+        	var updated_name = $(this).parents('tr').find('.data-college-name').val();
+        	var college_id = $(this).parents('tr').data('college-id');
+
+        	location.href = '{{URL::route('action_update_college_status')}}?id='+college_id+'&to=validate&name=' + encodeURI(updated_name);
+
+        });
+
+
+
 
 
 

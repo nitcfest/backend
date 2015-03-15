@@ -703,9 +703,25 @@ class ManageController extends BaseController {
 		$id = Input::get('id');
 		$to = Input::get('to');
 
-		$college = College::whereId($id)->whereValidated(0)->first();
+		$name = Input::get('name');
+
+		$college = College::whereId($id)->whereValidated(0)->get();
+
+		if($college->count() == 0){
+			Session::flash('error', 'Already updated.');
+			return Redirect::route('manager_verify_colleges');
+		}
+
+		$college = $college->first();
 
 		if($to == 'validate'){
+
+			if($name == ''){
+				Session::flash('error', 'Invalid college name.');
+				return Redirect::route('manager_verify_colleges');
+			}
+
+			$college->name = $name;			
 			$college->validated = 1;
 			Session::flash('success', 'College validated. Users can now register with this college.');
 		}else if($to == 'block'){
