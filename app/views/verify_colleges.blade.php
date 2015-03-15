@@ -50,6 +50,7 @@ Verify Colleges
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Created at</th>
                     <th>Name</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -61,6 +62,7 @@ Verify Colleges
                    <?php $i++; ?>
                    <tr>
                        <td>{{$i}}</td>
+                       <td>{{$college->created_at}}</td>
                        <td>{{$college->name }}</td>
                        <td>Not Validated</td>
                        <td>

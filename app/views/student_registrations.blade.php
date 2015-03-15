@@ -37,7 +37,7 @@ Student Registrations
                        <td>{{$registration->name }}</td>
                        <td>{{$registration->email }}</td>
                        <td>{{$registration->phone }}</td>
-                       <td>{{$registration->college->name }}</td>
+                       <td>@if ($registration->college) {{$registration->college->name }} @endif</td>
                    </tr>
                 @endforeach
             </tbody>
