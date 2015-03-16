@@ -445,21 +445,26 @@ class ApiController extends BaseController {
 
 		
 
+		//Alternate query to match abbreviations
 		$alt_query = $query;
 
 		$patterns = array(
-			'/NIT/',
-			'/IIT/',
-			'/IIM/',
+			'/(^NIT|^nit( )|^nit$)/',
+			'/(^IIT|^iit( )|^iit$)/',
+			'/(^IIM|^iim( )|^iim$)/',
 			);
 
 		$replacements = array(
-			'National Institute of Technology',
-			'Indian Institute of Technology',
-			'Indian Institute of Management',
+			'National Institute of Technology$2',
+			'Indian Institute of Technology$2',
+			'Indian Institute of Management$2',
 			);
 
 		$alt_query = preg_replace($patterns, $replacements, $query);
+
+		//Improves search experience
+		$alt_query = preg_replace('/ /', '%', $alt_query);
+		$query = preg_replace('/ /', '%', $query);
 
 
 
