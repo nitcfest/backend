@@ -66,7 +66,13 @@ Complete your registration
                         <div class="radio">
                             <label>
                                 <input type="radio" name="hospitality_type" value="1">
-                                Yes, I would like accomodation.
+                                Yes, I would like accomodation (Male)
+                            </label>
+                        </div>
+                        <div class="radio">
+                            <label>
+                                <input type="radio" name="hospitality_type" value="2">
+                                Yes, I would like accomodation (Female)
                             </label>
                         </div>
                         <br>
