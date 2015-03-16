@@ -443,12 +443,32 @@ class ApiController extends BaseController {
 		
 		$page--;
 
+		
+
+		$alt_query = $query;
+
+		$patterns = array(
+			'/NIT/',
+			'/IIT/',
+			'/IIM/',
+			);
+
+		$replacements = array(
+			'National Institute of Technology',
+			'Indian Institute of Technology',
+			'Indian Institute of Management',
+			);
+
+		$alt_query = preg_replace($patterns, $replacements, $query);
+
+
+
 		if(strlen($query) >= 2){
 
 			if($show_admin)
-				$colleges = College::where('name','LIKE','%'.$query.'%')->where('validated','!=', 0);
+				$colleges = College::where('name','LIKE','%'.$query.'%')->orWhere('name','LIKE','%'.$alt_query.'%')->where('validated','!=', 0);
 			else
-				$colleges = College::where('name','LIKE','%'.$query.'%')->whereValidated(1);
+				$colleges = College::where('name','LIKE','%'.$query.'%')->orWhere('name','LIKE','%'.$alt_query.'%')->whereValidated(1);
 
 			$total_count = $colleges->count();
 			$colleges = $colleges->skip($page*30)->take(30)->get(['id','name','validated']);
