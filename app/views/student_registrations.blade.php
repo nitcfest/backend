@@ -18,6 +18,32 @@ Student Registrations
 <!-- /.row -->
 <div class="row">
     <div class="col-lg-12">
+
+        <div class="row">
+          <div class="col-md-4 col-lg-3">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-users fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">{{count($registrations)}}</div>
+                            <div class="big">Students Registered</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if($hide!=2)
+            <a href="{{ URL::route('manager_student_registrations') }}?hide=2" class="btn btn-info btn-lg btn-block"><span class="fa fa-minus-circle"></span> Hide NIT Calicut Registrations</a>
+            @else
+            <a href="{{ URL::route('manager_student_registrations') }}" class="btn btn-info btn-lg btn-block"><span class="fa fa-plus-circle"></span> Show NIT Calicut Registrations</a>
+            @endif
+          </div>
+        </div>
+        <br>
+
+
         <table class="table table-striped table-hover">
             <thead>
                 <tr>

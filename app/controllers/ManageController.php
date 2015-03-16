@@ -738,9 +738,13 @@ class ManageController extends BaseController {
 
 
 	public function studentRegistrations(){
-		$registrations = Registration::orderBy('id','asc')->get();
+		if(is_numeric(Input::get('hide',''))){
+			$registrations = Registration::where('college_id','!=',Input::get('hide'))->orderBy('id','asc')->get();
+		}else{
+			$registrations = Registration::orderBy('id','asc')->get();
+		}
 
-		return View::make('student_registrations', array('registrations'=>$registrations));
+		return View::make('student_registrations', array('registrations'=>$registrations, 'hide'=>Input::get('hide')));
 	}
 
 
