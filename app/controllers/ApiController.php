@@ -451,7 +451,7 @@ class ApiController extends BaseController {
 				$colleges = College::where('name','LIKE','%'.$query.'%')->whereValidated(1);
 
 			$total_count = $colleges->count();
-			$colleges = $colleges->skip($page*10)->take(10)->get(['id','name','validated']);
+			$colleges = $colleges->skip($page*30)->take(30)->get(['id','name','validated']);
 
 			if($show_admin){
 				$colleges->map(function($college){

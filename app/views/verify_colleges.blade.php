@@ -129,10 +129,15 @@ Verify Colleges
                         show_admin: true,
                         };
                 },
-                processResults: function (data, page) {
-                  return {
-                    results: data.colleges
-                  };
+                processResults: function (data, params) {
+
+                    params.page = params.page || 1;
+                    return {
+                        results: data.colleges,
+                        pagination: {
+                          more: (params.page * 30) < data.total_count
+                        }
+                    };
               },
               cache: true
             },
