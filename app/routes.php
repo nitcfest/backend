@@ -283,10 +283,16 @@ Route::group(array(
 	    	));
 
 
+    	Route::get('hospitality', array(
+	    	'before' => 'role.hospitality',
+	    	'as' => 'software_hospitality',
+	    	'uses'=> 'SoftwareController@hospitality'
+	    	));
 
 
 
 
+    	//Events
 	    Route::get('events', array(
 	    	'before' => 'role.event_edit',
 	    	'as' => 'manager_events',

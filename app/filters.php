@@ -110,6 +110,18 @@ Route::filter('role.student_registrations', function()
 
 
 
+Route::filter('role.hospitality', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[3,4,5,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
+
+
+
+
 Route::filter('auth.user', function()
 {
 	if (Auth::user()->guest())
