@@ -35,6 +35,7 @@ Student Registrations
                 </div>
             </div>
             @if($hide!=2)
+            {{--  Change this 2 to the correct college id. --}}
             <a href="{{ URL::route('manager_student_registrations') }}?hide=2" class="btn btn-info btn-lg btn-block"><span class="fa fa-minus-circle"></span> Hide NIT Calicut Registrations</a>
             @else
             <a href="{{ URL::route('manager_student_registrations') }}" class="btn btn-info btn-lg btn-block"><span class="fa fa-plus-circle"></span> Show NIT Calicut Registrations</a>
