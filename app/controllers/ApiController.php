@@ -470,10 +470,16 @@ class ApiController extends BaseController {
 
 		if(strlen($query) >= 2){
 
-			if($show_admin)
-				$colleges = College::where('name','LIKE','%'.$query.'%')->orWhere('name','LIKE','%'.$alt_query.'%')->where('validated','!=', 0);
-			else
-				$colleges = College::where('name','LIKE','%'.$query.'%')->orWhere('name','LIKE','%'.$alt_query.'%')->whereValidated(1);
+			if($show_admin){
+				$colleges = College::where('validated','!=', 0)->where(function($update_query) use($query, $alt_query){
+					$update_query->where('name','LIKE','%'.$query.'%')->orWhere('name','LIKE','%'.$alt_query.'%');		
+				});
+			}else{
+				$colleges = College::whereValidated(1)->where(function($update_query) use($query, $alt_query){
+					$update_query->where('name','LIKE','%'.$query.'%')->orWhere('name','LIKE','%'.$alt_query.'%');
+				});
+			}
+
 
 			$total_count = $colleges->count();
 			$colleges = $colleges->skip($page*30)->take(30)->get(['id','name','validated']);
