@@ -244,6 +244,7 @@ class ApiController extends BaseController {
 									'name' => $user->name,
 									'email' => $user->email,
 									'fb_uid' => $user->fb_uid,
+									'page' => 'signup',
 									));
 							}else{
 								//User has already completed registration. Just log him in.
@@ -262,6 +263,7 @@ class ApiController extends BaseController {
 								'name' => $user->name,
 								'email' => $user->email,
 								'fb_uid' => $user->fb_uid,
+								'page' => 'signup',
 								));
 						}
 					}
@@ -277,6 +279,7 @@ class ApiController extends BaseController {
 						'name' => $user->name,
 						'email' => $user->email,
 						'fb_uid' => $user->fb_uid,
+						'page' => 'signup',
 						));
 				}else{
 					//User has already logged in with FB before.
@@ -287,6 +290,7 @@ class ApiController extends BaseController {
 							'name' => $user->name,
 							'email' => $user->email,
 							'fb_uid' => $user->fb_uid,
+							'page' => 'signup',
 							));
 					}else{
 						//User has already completed registration. Just log him in.
@@ -318,6 +322,8 @@ class ApiController extends BaseController {
 			'name' => Session::get('name',''),
 			'email' => Session::get('email',''),
 			'fb_uid' => Session::get('fb_uid',''),
+			'page' => 'signup',
+
 			));
 	}
 
