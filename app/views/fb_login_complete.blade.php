@@ -11,6 +11,8 @@ Complete your registration
 @section('content')
 
 <div style="height:50px;"></div>
+
+@if($page=='signup')
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         <div class="login-panel panel panel-default">
@@ -92,6 +94,26 @@ Complete your registration
         </div>
     </div>
 </div>
+
+@elseif($page=='done')
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="login-panel panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Registration Complete.</h3>
+            </div>
+            <div class="panel-body">
+            	<p> Your registration is complete. You may now register for events.<br>Please note down your Ragam ID: 
+            	<h3>{{$ragam_id}}</h3>
+
+            	<br>
+            	<a href="{{Config::get('app.homepage')}}" class="btn btn-success btn-block">Continue to Ragam Website <span class="glyphicon glyphicon-chevron-right"></span></a>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+
 
 @stop
 

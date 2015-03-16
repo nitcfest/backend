@@ -365,7 +365,14 @@ class ApiController extends BaseController {
 
 		//User registration is complete. Log in.
 		Auth::user()->login($registration);
-		return Redirect::intended(Config::get('app.homepage'));	
+
+
+		return View::make('fb_login_complete', array(
+			'page' => 'done',
+			'ragam_id' => Config::get('app.id_prefix').$registration->id,
+			));
+
+		// return Redirect::intended(Config::get('app.homepage'));	
 	}
 
 
