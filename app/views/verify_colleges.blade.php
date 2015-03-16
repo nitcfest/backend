@@ -138,7 +138,7 @@ Verify Colleges
                           more: (params.page * 30) < data.total_count
                         }
                     };
-              },
+                },
               cache: true
             },
             escapeMarkup: function (markup) { return markup; },

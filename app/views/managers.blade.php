@@ -23,6 +23,10 @@ Managers
             <form action="{{URL::route('action_new_manager')}}" method="POST" role="form">
                 {{Form::token()}}
                 <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" class="form-control" name="name" placeholder="Full name" required>
+                </div>
+                <div class="form-group">
                     <label>Email</label>
                     <input type="email" class="form-control" name="email" placeholder="Email address" required>
                 </div>

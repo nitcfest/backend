@@ -186,6 +186,7 @@ class ManageController extends BaseController {
 
 	public function managersNew(){
 		$rules = array(
+			'name' => 'required|min:3',
 			'email' => 'required|email|unique:managers',
 			'password' => 'required|min:4',
 			'role' => 'numeric',
@@ -215,6 +216,7 @@ class ManageController extends BaseController {
 
 		$manager = new Manager;
 
+		$manager->name = Input::get('name');
 		$manager->email = Input::get('email');
 		$manager->password = Hash::make(Input::get('password'));
 		$manager->role = Input::get('role');
