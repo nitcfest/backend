@@ -753,9 +753,18 @@ class ManageController extends BaseController {
 					$registration->college_status = 'Validated';
 			}
 
-			$check_email = Registration::where('email','=',$registration->email)->whereNotNull('college_id')->count();
+			if($registration->status == 0){
+				$check_email = Registration::where('email','=',$registration->email)->whereNotNull('college_id');
+				
+				if($check_email->count() > 0){
+					$update = PendingRegistration::where('id','=',$registration->id)->first();
 
-			if($check_email == 0){
+					$update->status = 1;
+					$update->save();
+				}
+			}
+
+			if($registration->status == 0){
 				$registration->status = 'Not Registered';
 				$pending_count++;
 			}else
