@@ -761,6 +761,8 @@ class ManageController extends BaseController {
 
 					$update->status = 1;
 					$update->save();
+
+					$registration->status = 1;
 				}
 			}
 
