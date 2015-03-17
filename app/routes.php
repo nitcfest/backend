@@ -270,6 +270,13 @@ Route::group(array(
     		'uses'=> 'ManageController@verifyCollegesStatus'
     		));
 
+    	Route::get('verify_colleges/pending_registrations', array(
+	    	'before' => 'role.colleges',
+	    	'as' => 'manager_pending_registrations',
+	    	'uses'=> 'ManageController@verifyCollegesPending'
+	    	));
+
+
     	Route::get('student_registrations', array(
 	    	'before' => 'role.student_registrations',
 	    	'as' => 'manager_student_registrations',

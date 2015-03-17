@@ -24,13 +24,13 @@ Complete your registration
                 	<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                     <fieldset>
                         <div class="form-group">
-                            <input class="form-control" placeholder="Name" name="name" value="{{{ $name }}}" readonly>
+                            <input class="form-control" placeholder="Name" id="data-registration-name" name="name" value="{{{ $name }}}" readonly>
                         </div>
                         <div class="form-group">
-                            <input class="form-control" placeholder="Email" name="email" value="{{{ $email }}}" readonly>
+                            <input class="form-control" placeholder="Email" id="data-registration-email" name="email" value="{{{ $email }}}" readonly>
                         </div>
                         <div class="form-group">
-                            <input class="form-control" placeholder="Phone Number" name="phone" type="text" required>
+                            <input class="form-control" placeholder="Phone Number" id="data-registration-phone" name="phone" type="text" required>
                         </div>
 
                         <div class="form-group">
@@ -181,12 +181,15 @@ Complete your registration
             event.preventDefault();
 
             var college_name = $('#name_new_college').val();
+            var email = $('#data-registration-email').val();
+            var name = $('#data-registration-name').val();
+            var phone = $('#data-registration-phone').val();
 
             $.ajax({
               url: '{{URL::route('api_new_college')}}',
               type: 'GET',
               dataType: 'jsonp',
-              data: { college_name: college_name },
+              data: { college_name: college_name, email: email, name: name, phone: phone },
               success: function(data, textStatus, xhr) {
                 if(data.result == 'success'){
                     $('#add-college-messages').html('<br>Your college has been added and is pending verification. Please try registering after a few hours.');

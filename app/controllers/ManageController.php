@@ -737,6 +737,38 @@ class ManageController extends BaseController {
 	}
 
 
+	public function verifyCollegesPending(){
+		$registrations = PendingRegistration::with('college')->orderBy('created_at','desc')->get();
+
+		$pending_count = 0;
+
+		$registrations->map(function($registration) use(&$pending_count){
+
+			if($registration->college){
+				if($registration->college->validated == -1)
+					$registration->college_status = 'Blocked';
+				else if($registration->college->validated == 0)
+					$registration->college_status = 'Not Validated';
+				else				
+					$registration->college_status = 'Validated';
+			}
+
+			$check_email = Registration::where('email','=',$registration->email)->whereNotNull('college_id')->count();
+
+			if($check_email == 0){
+				$registration->status = 'Not Registered';
+				$pending_count++;
+			}else
+				$registration->status = 'Registered';
+
+
+			return $registration;
+		});
+
+		return View::make('pending_registrations', array('registrations'=>$registrations, 'pending_count' => $pending_count ));		
+	}
+
+
 	public function studentRegistrations(){
 		if(is_numeric(Input::get('hide',''))){
 			$registrations = Registration::where('college_id','!=',Input::get('hide'))->orderBy('id','asc')->get();

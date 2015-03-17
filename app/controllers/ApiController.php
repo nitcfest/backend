@@ -526,19 +526,59 @@ class ApiController extends BaseController {
 	public function collegeNew(){
 		$college_name = Input::get('college_name', '');
 
+		//Name and email of the user who's trying to add the college.
+		$email = Input::get('email', '');
+		$name = Input::get('name', '');
+		$phone = Input::get('phone', '');
+
 		if(strlen($college_name)<=3 || strlen($college_name)>80 )
 			return Response::json(['result'=>'fail', 'reason'=>'invalid_name'])->setCallback(Input::get('callback'));			
 
 		$existing = College::where('name', 'LIKE', '%'.$college_name.'%');
 		
-		if($existing->count()>0)
+		if($existing->count()>0){
+
+			if($email!= ''){
+				$pending_college = PendingRegistration::where('email','=',$email)->get();
+
+				if($pending_college->count() == 0){
+					$pending_college = new PendingRegistration;
+				}else{
+					$pending_college = $pending_college->first();
+				}
+
+				$pending_college->name = $name;
+				$pending_college->email = $email;
+				$pending_college->phone = $phone;
+				$pending_college->college_id = $existing->get()->first()->id;
+				$pending_college->status = 0;
+				$pending_college->save();		
+			}
+
 			return Response::json(['result'=>'fail', 'reason'=>'name_exists'])->setCallback(Input::get('callback'));			
-		
+		}
+
 		$college = new College;
 		$college->name = $college_name;
 		$college->validated = 0;
-
 		$college->save();	
+
+		if($email!= ''){
+			$pending_college = PendingRegistration::where('email','=',$email)->get();
+
+			if($pending_college->count() == 0){
+				$pending_college = new PendingRegistration;
+			}else{
+				$pending_college = $pending_college->first();
+			}
+
+			$pending_college->name = $name;
+			$pending_college->email = $email;
+			$pending_college->phone = $phone;
+			$pending_college->college_id = $college->id;
+			$pending_college->status = 0;
+			$pending_college->save();		
+		}
 
 		return Response::json(['result'=>'success'])->setCallback(Input::get('callback'));			
 	}

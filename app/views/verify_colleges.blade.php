@@ -48,7 +48,10 @@ Verify Colleges
         For example, do not validate "NIT Calicut", instead "National Institute of Technology Calicut" is preferred.</p>
 
         <p>To change the name entered by the user to a better format before validation, you may edit the text input.</p>
-
+        <br>
+        <p>To view the list of students who tried to add a college, use the button below.</p>
+        <a href="{{ URL::route('manager_pending_registrations') }}" class="btn btn-info btn-lg"><span class="fa fa-user"></span> View Pending Registrations</a>
+        <br><br>
 
         <table class="table table-striped table-hover">
             <thead>
