@@ -799,7 +799,7 @@ class ManageController extends BaseController {
 
 	public function eventRegistrationDetails($id){
 
-		$team = Team::with('owner','event','team_members.details')->whereId($id)->get();
+		$team = Team::with('owner','event','team_members.details.college')->whereId($id)->get();
 
 		if($team->count() == 0){
 			return Redirect::route('manager_event_registrations');

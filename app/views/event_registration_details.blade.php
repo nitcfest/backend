@@ -54,6 +54,9 @@ Team Details
                     <th>#</th>
                     <th>Ragam ID</th>
                     <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>College</th>
                 </tr>
             </thead>
             <tbody>
@@ -64,6 +67,9 @@ Team Details
                        <td>{{$i}}</td>
                        <td>{{Config::get('app.id_prefix').$team_member->details->id }}</td>
                        <td>{{$team_member->details->name }}</td>
+                       <td>{{$team_member->details->email }}</td>
+                       <td>{{$team_member->details->phone }}</td>
+                       <td>{{$team_member->details->college->name }}</td>
                    </tr>
                 @endforeach
             </tbody>

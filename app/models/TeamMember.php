@@ -11,7 +11,7 @@ class TeamMember extends Eloquent
 	}
 
 	public function details(){
-		return $this->belongsTo('Registration','registration_id')->select('id', 'name');
+		return $this->belongsTo('Registration','registration_id')->select('id', 'name', 'email', 'phone', 'college_id');
 	}
 
 }
