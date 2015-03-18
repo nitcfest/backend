@@ -13,4 +13,8 @@ class Team extends Eloquent
 	public function event(){
 		return $this->belongsTo('Events', 'event_code', 'event_code')->select('event_code','name');
 	}
+
+	public function owner(){
+		return $this->belongsTo('Registration','owner_id')->select('id', 'name');
+	}
 }

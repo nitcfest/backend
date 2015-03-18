@@ -289,6 +289,12 @@ Route::group(array(
 	    	'uses'=> 'ManageController@eventRegistrations'
 	    	));
 
+    	Route::get('event_registrations/{id}', array(
+	    	'before' => 'role.student_registrations',
+	    	'as' => 'manager_event_registration_details',
+	    	'uses'=> 'ManageController@eventRegistrationDetails'
+	    	))->where('id', '[0-9]+');
+
 
     	Route::get('hospitality', array(
 	    	'before' => 'role.hospitality',
@@ -347,12 +353,3 @@ Route::group(array(
 
 	}
 );
-
-
-
-Route::get('/user', array('before'=>'auth.user', function()
-{
-	echo 'Work in progress.';
-	// return Auth::user()->get();
-}));
-

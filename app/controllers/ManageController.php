@@ -797,6 +797,19 @@ class ManageController extends BaseController {
 		return View::make('event_registrations', array('registrations'=>$teams));
 	}
 
+	public function eventRegistrationDetails($id){
+
+		$team = Team::with('owner','event','team_members.details')->whereId($id)->get();
+
+		if($team->count() == 0){
+			return Redirect::route('manager_event_registrations');
+		}
+
+		$team = $team->first();
+
+		return View::make('event_registration_details',array('team'=>$team));
+	}
+
 
 
 
