@@ -234,7 +234,9 @@ class ApiController extends BaseController {
 						if($user->count() > 0){
 							$user = $user->first();
 							$user->fb_uid = $result['id'];
-							$user->name = $result['first_name'].' '.$result['last_name'];
+
+							// Uncomment this line to automatically update user's names when they log in with Facebook.
+							// $user->name = $result['first_name'].' '.$result['last_name'];
 
 							$user->save();
 
@@ -315,7 +317,7 @@ class ApiController extends BaseController {
 	public function userFbComplete(){
 		if(Session::get('fb_uid','') == ''){
 			//No FB UID specified. 
-			return Redirect::intended(Config::get('app.homepage'));				
+			return Redirect::intended(Config::get('app.homepage')); 
 		}
 
 		return View::make('fb_login_complete', array(
@@ -329,7 +331,10 @@ class ApiController extends BaseController {
 
 
 	public function userFbCompletePost(){
+
 		$rules = array(
+			'name' => 'required|min:3',
+			'email' => 'required|email',
 			'college' => 'required|numeric|exists:colleges,id,validated,1',
 			'hospitality_type' => 'required|in:0,1,2',
 			'phone' => 'max:15'
@@ -357,11 +362,31 @@ class ApiController extends BaseController {
 		$registration = Registration::where('fb_uid','=', Input::get('fb_uid'))->whereNull('college_id');
 
 		if($registration->count() == 0){
-			Session::flash('errors', 'There was an error during registration. Please try again later.');
+			Session::flash('errors', 'There was an error during registration. Try again later.<br> <a href="'.Config::get('app.homepage').'">Back to homepage</a>.');
+			Session::flash('name', Input::get('name'));
+			Session::flash('email', Input::get('email'));
+			Session::flash('fb_uid', Input::get('fb_uid'));
 			return Redirect::route('api_fb_complete_get')->withInput();
 		}
 
 		$registration = $registration->get()->first();
+
+		if($registration->email == ''){
+			$check_email = Registration::where('email','=',Input::get('email'));
+
+			if($check_email->count() > 0){
+				Session::flash('errors', 'The email address you entered is already registered.');
+				Session::flash('name', Input::get('name'));
+				Session::flash('email', Input::get('email'));
+				Session::flash('fb_uid', Input::get('fb_uid'));
+				return Redirect::route('api_fb_complete_get')->withInput();				
+			}
+
+			//If the email is not registered, register it now.
+			$registration->email = Input::get('email');
+		}
+
+		$registration->name = Input::get('name');
 		$registration->college_id = Input::get('college');
 		$registration->phone = Input::get('phone');
 		$registration->hospitality_type = Input::get('hospitality_type');

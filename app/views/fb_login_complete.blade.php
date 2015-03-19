@@ -24,10 +24,10 @@ Complete your registration
                 	<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
                     <fieldset>
                         <div class="form-group">
-                            <input class="form-control" placeholder="Name" id="data-registration-name" name="name" value="{{{ $name }}}" readonly>
+                            <input class="form-control" placeholder="Full Name" id="data-registration-name" name="name" value="{{{ $name }}}" required>
                         </div>
                         <div class="form-group">
-                            <input class="form-control" placeholder="Email" id="data-registration-email" name="email" value="{{{ $email }}}" readonly>
+                            <input class="form-control" placeholder="Email" id="data-registration-email" name="email" value="{{{ $email }}}" required>
                         </div>
                         <div class="form-group">
                             <input class="form-control" placeholder="Phone Number" id="data-registration-phone" name="phone" type="text" required>
