@@ -27,7 +27,9 @@ class AddRegistrationsTable extends Migration {
 		    $table->foreign('college_id')->references('id')->on('colleges');
 
 		    $table->integer('hospitality_type')->unsigned()->default(0);
-		    $table->boolean('payment_done')->default(false);
+		    
+		    $table->integer('registration_confirm')->default(0);
+		    $table->integer('hospitality_confirm')->default(0);
 
 		    $table->string('notes', 1000)->nullable();
 

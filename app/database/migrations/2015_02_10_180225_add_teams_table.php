@@ -26,6 +26,8 @@ class AddTeamsTable extends Migration {
 		    $table->integer('owner_id')->unsigned();
 		    $table->foreign('owner_id')->references('id')->on('registrations');
 
+		    $table->integer('confirmation')->default(0);
+
 		    $table->timestamp('created_at');
 		});
 	}

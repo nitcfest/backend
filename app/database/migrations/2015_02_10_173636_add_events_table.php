@@ -29,6 +29,8 @@ class AddEventsTable extends Migration {
 		   	$table->string('short_description', 3000)->nullable();
 		   	$table->string('long_description', 10000)->nullable();
 
+		   	$table->string('results', 1000)->nullable();
+
 		   	$table->integer('team_min')->unsigned()->default(1);
 		   	$table->integer('team_max')->unsigned()->default(1);
 
