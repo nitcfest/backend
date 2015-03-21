@@ -298,9 +298,51 @@ Route::group(array(
 
     	Route::get('hospitality', array(
 	    	'before' => 'role.hospitality',
-	    	'as' => 'software_hospitality',
-	    	'uses'=> 'SoftwareController@hospitality'
+	    	'as' => 'manager_hospitality',
+	    	'uses'=> 'ManageController@hospitality'
 	    	));
+
+
+    	//Registration software
+
+    	Route::get('software/statistics', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_statistics',
+	    	'uses'=> 'SoftwareController@statistics'
+	    	));
+
+    	Route::get('software/student_registration', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_student_registration',
+	    	'uses'=> 'SoftwareController@studentRegistration'
+	    	));
+
+    	Route::get('software/event_registration', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration',
+	    	'uses'=> 'SoftwareController@eventRegistration'
+	    	));
+
+    	Route::get('software/workshop_registration', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_workshop_registration',
+	    	'uses'=> 'SoftwareController@workshopRegistration'
+	    	));
+
+    	Route::get('software/hospitality_manager', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_hospitality_manager',
+	    	'uses'=> 'SoftwareController@hospitalityManager'
+	    	));
+
+    	Route::get('software/student_registration/do', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_student_registration_do',
+	    	'uses'=> 'SoftwareController@studentRegistrationDo'
+	    	));
+
+
+
 
 
 

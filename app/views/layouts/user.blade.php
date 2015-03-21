@@ -122,11 +122,29 @@
                         </li>
                         @endif
 
+                        @if(in_array(Auth::manager()->get()->role,[3,4,5,21]))
+                        <li>
+                            <a href="{{ URL::route('manager_hospitality') }}"><i class="fa fa-fw fa-lg fa-bed" style="vertical-align: middle;"></i> Hospitality</a>
+                        </li>
+                        @endif
+
 
                         @if(in_array(Auth::manager()->get()->role,[3,4,5,21]))
                         <li><hr><a>Registration Software</a></li>
                         <li>
-                            <a href="{{ URL::route('software_hospitality') }}"><i class="fa fa-fw fa-lg fa-bed" style="vertical-align: middle;"></i> Hospitality</a>
+                            <a href="{{ URL::route('software_statistics') }}"><i class="fa fa-fw fa-lg fa-area-chart" style="vertical-align: middle;"></i> Statistics</a>
+                        </li>
+                        <li>
+                            <a href="{{ URL::route('software_student_registration') }}"><i class="fa fa-fw fa-lg fa-paper-plane" style="vertical-align: middle;"></i> Student Registration</a>
+                        </li>
+                        <li>
+                            <a href="{{ URL::route('software_event_registration') }}"><i class="fa fa-fw fa-lg fa-trophy" style="vertical-align: middle;"></i> Event Registration</a>
+                        </li>
+                        <li>
+                            <a href="{{ URL::route('software_workshop_registration') }}"><i class="fa fa-fw fa-lg fa-puzzle-piece" style="vertical-align: middle;"></i> Workshop Registration</a>
+                        </li>
+                        <li>
+                            <a href="{{ URL::route('software_hospitality_manager') }}"><i class="fa fa-fw fa-lg fa-bed" style="vertical-align: middle;"></i> Hospitality Manager</a>
                         </li>
                         @endif
 

@@ -53,6 +53,7 @@ Student Registrations
                     <th>Email</th>
                     <th>Phone</th>
                     <th>College</th>
+                    <th>Events</th>
                 </tr>
             </thead>
             <tbody>
@@ -65,6 +66,7 @@ Student Registrations
                        <td>{{$registration->email }}</td>
                        <td>{{$registration->phone }}</td>
                        <td>@if ($registration->college) {{$registration->college->name }} @endif</td>
+                       <td>{{$registration->event_count}}</td>
                    </tr>
                 @endforeach
             </tbody>

@@ -784,8 +784,13 @@ class ManageController extends BaseController {
 		if(is_numeric(Input::get('hide',''))){
 			$registrations = Registration::where('college_id','!=',Input::get('hide'))->orderBy('id','asc')->get();
 		}else{
-			$registrations = Registration::orderBy('id','asc')->get();
+			$registrations = Registration::orderBy('id','asc')->whereNotNull('college_id')->get();
 		}
+
+		$registrations->map(function($registration){
+			$registration->event_count = TeamMember::where('registration_id','=',$registration->id)->count();
+			return $registration;
+		});
 
 		return View::make('student_registrations', array('registrations'=>$registrations, 'hide'=>Input::get('hide')));
 	}
@@ -808,6 +813,18 @@ class ManageController extends BaseController {
 		$team = $team->first();
 
 		return View::make('event_registration_details',array('team'=>$team));
+	}
+
+
+	public function hospitality(){
+
+		//ID of NIT Calicut in colleges table
+		$nit_id = 2;
+
+		$males = Registration::where('hospitality_type','=', 1)->where('college_id','!=',$nit_id)->orderBy('id','asc')->get();
+		$females = Registration::where('hospitality_type','=', 2)->where('college_id','!=',$nit_id)->orderBy('id','asc')->get();
+
+		return View::make('hospitality', array('males'=>$males, 'females'=>$females));
 	}
 
 
