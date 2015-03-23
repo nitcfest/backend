@@ -317,6 +317,26 @@ Route::group(array(
 	    	'uses'=> 'SoftwareController@studentRegistration'
 	    	));
 
+    	Route::get('software/student_registration/{id}', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_student_registration_details',
+	    	'uses'=> 'SoftwareController@studentRegistrationDetails'
+	    	))->where('id', '[0-9]+');
+
+		Route::get('software/student_registration/new', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_student_registration_new',
+	    	'uses'=> 'SoftwareController@studentRegistrationNew'
+	    	));
+
+    	Route::get('software/student_registration/do', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_student_registration_do',
+	    	'uses'=> 'SoftwareController@studentRegistrationDo'
+	    	));
+
+
+
     	Route::get('software/event_registration', array(
 	    	'before' => 'role.software',
 	    	'as' => 'software_event_registration',
@@ -335,11 +355,6 @@ Route::group(array(
 	    	'uses'=> 'SoftwareController@hospitalityManager'
 	    	));
 
-    	Route::get('software/student_registration/do', array(
-	    	'before' => 'role.software',
-	    	'as' => 'software_student_registration_do',
-	    	'uses'=> 'SoftwareController@studentRegistrationDo'
-	    	));
 
 
 

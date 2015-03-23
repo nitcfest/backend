@@ -25,7 +25,8 @@ Student Registrations
 <!-- /.row -->
 <div class="row">
     <div class="col-lg-12">
-
+        <a href="{{ URL::route('software_student_registration_new') }}" class="btn btn-info btn-lg"><span class="glyphicon glyphicon-plus"></span> New Registration</a>
+        <br>
         <h3>Selected for Registration</h3>
         <table class="table table-striped table-hover">
             <thead>
@@ -46,7 +47,7 @@ Student Registrations
                 </tr>
             </tbody>
         </table>
-        <button type="button" id="action-start-registration" class="disabled btn btn-success btn-lg">Start Registration <span class="glyphicon glyphicon-chevron-right"></span></button>
+        <button type="button" id="action-start-registration" class="disabled btn btn-success btn-lg">Register Selection <span class="glyphicon glyphicon-chevron-right"></span></button>
 
         <br><br>
 
@@ -77,7 +78,10 @@ Student Registrations
                        <td>@if ($registration->college) {{$registration->college->name }} @endif</td>
                        <td>@if ($registration->registration_confirm == 1) Confirmed @else No @endif</td>
                        <td>@if ($registration->registration_confirm == 1 && $registration->hospitality_confirm == 1) Confirmed @else No @endif</td>
-                       <td><button type="button" class="action-select-row btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span> Add</button></td>
+                       <td>
+                        <a href="{{URL::route('software_student_registration_details', $registration->id)}}" target="_blank" class="action-view btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span> View</a>
+                        <button type="button" class="action-select-row btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                       </td>
                    </tr>
                 @endforeach
             </tbody>
@@ -109,6 +113,7 @@ Student Registrations
                   });
         $('#registration_table').show();
 
+
         $('#registration-rows').on('click', '.action-select-row', function(event) {
             event.preventDefault();
             var clone = $(this).parents('tr').clone();
@@ -127,6 +132,7 @@ Student Registrations
             clone.appendTo('#registration-selected');
         });
 
+
         $('#registration-selected').on('click', '.action-deselect-row', function(event) {
             event.preventDefault();
 
@@ -135,7 +141,9 @@ Student Registrations
                 row_data.push($(this).html());
             });
 
-            row_data[row_data.length-1] = '<button type="button" class="action-select-row btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span> Add</button>';
+            row_data[row_data.length-1] = 
+              '<a href="{{URL::route('software_student_registration_details','')}}/'+ $(this).parents('tr').data('id') +'" target="_blank" class="action-view btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span> View</a>'+
+              ' <button type="button" class="action-select-row btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span> Add</button>';
 
             table.row.add( row_data )
                  .draw();

@@ -7,11 +7,11 @@ class TeamMember extends Eloquent
 	public $timestamps = false;
 
 	public function team(){
-		return $this->belongsTo('Team')->select('id', 'event_code', 'team_code', 'owner_id');
+		return $this->belongsTo('Team')->select('id', 'event_code', 'team_code', 'owner_id', 'confirmation');
 	}
 
 	public function details(){
-		return $this->belongsTo('Registration','registration_id')->select('id', 'name', 'email', 'phone', 'college_id');
+		return $this->belongsTo('Registration','registration_id')->select('id', 'name', 'email', 'phone', 'college_id', 'registration_confirm');
 	}
 
 }
