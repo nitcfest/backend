@@ -335,6 +335,13 @@ Route::group(array(
 	    	'uses'=> 'SoftwareController@studentRegistrationDo'
 	    	));
 
+    	Route::post('software/student_registration/save', array(
+	    	'before' => 'role.software|csrf',
+	    	'as' => 'software_student_registration_save',
+	    	'uses'=> 'SoftwareController@studentRegistrationSave'
+	    	));
+
+
 
 
     	Route::get('software/event_registration', array(

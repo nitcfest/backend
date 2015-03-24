@@ -69,6 +69,96 @@ class SoftwareController extends BaseController {
 	}
 
 
+	public function studentRegistrationSave(){
+		$type = Input::get('type', '');
+
+		if($type == 'new'){
+
+			$rules = array(
+				'name' => 'required|min:3',
+				'college_id' => 'required|numeric|exists:colleges,id,validated,1',
+				'hospitality_type' => 'required|in:0,1,2',
+				'phone' => 'required|min:10|max:15'
+				);
+
+			$validator = Validator::make(Input::all(), $rules);
+
+			$validator->sometimes('email', 'required|email|unique:registrations', function($input)
+			{
+			    return $input->email != '';
+			});
+
+
+			if($validator->fails())
+			{
+				$print = '';
+			    $messages = $validator->messages();
+
+			    foreach ($messages->all() as $message)
+			    {
+			    	$print.= $message."<br>";   
+			    }
+
+			    return Response::json(['result'=>'fail', 'error_messages'=>$print ])->setCallback(Input::get('callback'));
+			}
+
+
+			$registration = new Registration;
+			$registration->name = Input::get('name', '');
+
+			if(Input::get('email', '') != '')
+				$registration->email = Input::get('email');
+
+			$registration->phone = Input::get('phone', '');
+			$registration->college_id = Input::get('college_id', '');
+			$registration->hospitality_type = Input::get('hospitality_type', '');
+			$registration->save();
+			
+
+			if($registration->hospitality_type == 0)
+				$hospitality = 'No Accomodation';
+			else if($registration->hospitality_type == 1)
+				$hospitality = 'Yes, Male';
+			else
+				$hospitality = 'Yes, Female';
+
+			if($registration->hospitality_type > 0)
+				$hospitality_yn = 'yes';
+			else
+				$hospitality_yn = 'no';
+
+			return Response::json([
+				'result'=>'success',
+				'name'=> $registration->name,
+				'email' => $registration->email,
+				'phone' => $registration->phone,
+				'id' => $registration->id,
+				'college' => $registration->college->name,
+				'hospitality' => $hospitality,
+				'hospitality_yn' => $hospitality_yn,
+			]);
+
+
+		}else if($type == 'confirm'){
+
+			return Response::json([
+				'result'=>'success',
+				'name'=>'hello',
+				'email' => 'fuckflemil',
+				'phone' => '980980',
+				'id' => 'shit me',
+				'college' => 'NIIIIIT',
+				'hospitality' => 'Fuck you.',
+				'hospitality_yn' => 'no',
+				]);
+			
+			
+		}else{
+			return Response::json(['result'=>'fail']);
+		}
+	}
+
+
 
 	public function studentRegistrationDo(){
 
@@ -76,12 +166,7 @@ class SoftwareController extends BaseController {
 		
 		$registrations = Registration::with('college')->whereIn('id',$ids)->get();
 
-		$registrations->map(function($registration){
-			//Read Team Members
-		});
-
-		return $registrations;
-
+		return View::make('software.student_registration_do', array('registrations'=>$registrations));
 	}
 
 
