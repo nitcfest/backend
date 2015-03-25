@@ -19,6 +19,13 @@ New Registration
 </div>
 <!-- /.row -->
 <div class="row">
+	<div class="col-md-12">
+	<a href="{{URL::route('software_student_registration')}}" class="btn btn-default "><span class="glyphicon glyphicon-chevron-left"></span> Back to Student Registrations</a><br><br>
+	</div>
+</div>
+
+
+<div class="row">
     <div class="col-md-10">
     	<div id="registration-success-container">
     		<div class="well registration-success" style="background:#E1EDC9; display:none; " data-hospitality="">

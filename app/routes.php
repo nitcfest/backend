@@ -350,11 +350,102 @@ Route::group(array(
 	    	'uses'=> 'SoftwareController@eventRegistration'
 	    	));
 
+
+    	//For Ajax
+    	Route::post('software/event_registration/confirm', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_confirm',
+	    	'uses'=> 'SoftwareController@eventRegistrationConfirm'
+	    	));
+
+    	//For Button
+    	Route::get('software/event_registration/confirm', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_confirm_get',
+	    	'uses'=> 'SoftwareController@eventRegistrationConfirmGet'
+	    	));
+
+    	Route::get('software/event_registration/{id}', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_details',
+	    	'uses'=> 'SoftwareController@eventRegistrationDetails'
+	    	))->where('id', '[0-9]+');
+
+    	Route::get('software/event_registration/{id}/edit', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_details_edit',
+	    	'uses'=> 'SoftwareController@eventRegistrationDetailsEdit'
+	    	))->where('id', '[0-9]+');
+
+    	Route::get('software/event_registration/remove_member', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_remove_member',
+	    	'uses'=> 'SoftwareController@eventRegistrationRemoveMember'
+	    	))->where('id', '[0-9]+');
+
+    	Route::post('software/event_registration/add_members', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_add_members',
+	    	'uses'=> 'SoftwareController@eventRegistrationAddMember'
+	    	))->where('id', '[0-9]+');
+
+    	Route::get('software/event_registration/new', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_new',
+	    	'uses'=> 'SoftwareController@eventRegistrationNew'
+	    	));
+
+    	Route::post('software/event_registration/new', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_new_post',
+	    	'uses'=> 'SoftwareController@eventRegistrationNewPost'
+	    	));
+
+
+
+
+
+
     	Route::get('software/workshop_registration', array(
 	    	'before' => 'role.software',
 	    	'as' => 'software_workshop_registration',
 	    	'uses'=> 'SoftwareController@workshopRegistration'
 	    	));
+
+    	Route::get('software/workshop_registration/{id}', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_workshop_registration_details',
+	    	'uses'=> 'SoftwareController@workshopRegistrationDetails'
+	    	))->where('id', '[0-9]+');
+
+    	Route::get('software/workshop_registration/confirm', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_workshop_registration_confirm',
+	    	'uses'=> 'SoftwareController@workshopRegistrationConfirm'
+	    	));
+
+    	Route::post('software/workshop_registration/confirm', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_workshop_registration_confirm_post',
+	    	'uses'=> 'SoftwareController@workshopRegistrationConfirmPost'
+	    	));
+
+    	Route::get('software/workshop_registration/new', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_workshop_registration_new',
+	    	'uses'=> 'SoftwareController@workshopRegistrationNew'
+	    	));
+
+    	Route::post('software/workshop_registration/new', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_workshop_registration_new_post',
+	    	'uses'=> 'SoftwareController@workshopRegistrationNewPost'
+	    	));
+
+
+
+
+
 
     	Route::get('software/hospitality_manager', array(
 	    	'before' => 'role.software',

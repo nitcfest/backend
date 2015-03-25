@@ -42,7 +42,14 @@ Student Registration
 </div><!-- /.modal -->
 
 <div class="row">
-    <div class="col-md-10">
+	<div class="col-md-12">
+	<a href="{{URL::route('software_student_registration')}}" class="btn btn-default "><span class="glyphicon glyphicon-chevron-left"></span> Back to Student Registrations</a><br><br>
+	</div>
+</div>
+
+<div class="row">
+    <div class="col-md-10">    	
+
     	<div id="registration-success-container">
     		<div class="well registration-success" style="background:#E1EDC9; display:none; " data-hospitality="">
     			<div class="row">
@@ -77,6 +84,9 @@ Student Registration
 
 			<div class="well registration-details" data-id="{{$registration->id}}">
 				<form class="form-inline" role="form" method="POST">
+
+					<input type="hidden" name="id" value="{{$registration->id}}">
+
     				<div class="form-group">
     					<input type="text" class="form-control" value="{{Config::get('app.id_prefix').$registration->id}}" readonly>
     				</div>
@@ -112,6 +122,14 @@ Student Registration
 		&nbsp;&nbsp;<img id="loading-animation" style="display:none;" src="{{URL::to('/')}}/css/loading.gif">		
 		
 		<br><br>
+
+		<div class="alert alert-danger" id="alert-errors" style="display:none;">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			<div id="errors">
+
+			</div>
+		</div>
+		<br>
 
     </div>
     <div class="col-md-2">
@@ -232,85 +250,109 @@ $(function() {
 	init_college();
 
 
+	var do_confirm = function(){
+		$('#action-complete-registration').hide();
+
+		var $this = $('.registration-details').first();
+
+		//Save the data via ajax, show success form, and clear existing one.
+		var input_data = {
+			type  : 'confirm',
+			id    : $this.find('input[name="id"]').val(),
+			name  : $this.find('input[name="name"]').val(),
+			email : $this.find('input[name="email"]').val(),
+			phone : $this.find('input[name="phone"]').val(),
+			hospitality_type : $this.find('select[name="hospitality_type"]').val(),
+			college_id : $this.find('input[name="college_id"]').val(),
+			_token: _token
+		};
+
+		$('#loading-animation').show();
+
+		//Save
+		$.ajax({
+		  url: '{{ URL::route('software_student_registration_save') }}',
+		  type: 'POST',
+		  dataType: 'json',
+		  data: input_data,
+		  success: function(data, textStatus, xhr) {
+		  	$('#loading-animation').hide();
+
+		  	if(data.result == 'success'){
+		  		//Show success
+		  		var clone = $('.registration-success').first().clone();
+		  		clone.find('.data-name').html(data.name);
+		  		clone.find('.data-email').html(data.email);
+		  		clone.find('.data-phone').html(data.phone);
+		  		clone.find('.data-college').html(data.college);
+		  		clone.find('.data-hospitality').html(data.hospitality);
+		  		clone.find('.data-id').html(data.id);
+		  		clone.data('hospitality', data.hospitality_yn);
+		  		clone.appendTo('#registration-success-container');
+		  		clone.fadeIn(200);
+
+		  		//Update Total
+		  		var reg_total = ($('.registration-success').length - 1)*value_reg;
+		  		$('#registration-total').html(reg_total);
+
+		  		var $hosp = $('.registration-success').filter(function() { 
+		  		  return $(this).data("hospitality") == 'yes'; 
+		  		});
+
+		  		var hosp_total = ($hosp.length)*value_hosp;
+		  		$('#hospitality-total').html(hosp_total);
+
+		  		$('#net-total').html(reg_total+hosp_total);
+
+
+		  		$('#alert-errors').hide();
+		  		$('#errors').html('');
+
+		  		$this.css({
+		  			backgroundColor: '',
+		  		});
+
+
+		  		//If success, run the next iteration.
+		  		$('.registration-details').first().remove();
+
+		  		if($('.registration-details').length)
+		  			do_confirm();
+
+		  	}else{
+		  		//show errors
+
+		  		$this.css({
+		  			backgroundColor: '#f2dede',
+		  		});
+
+		  		$('#alert-errors').show();
+		  		$('#errors').html(data.error_messages);
+
+		  		$('#action-complete-registration').show();
+
+		  	}
+		  },
+		  error: function(xhr, textStatus, errorThrown) {
+		  	$('#loading-animation').hide();
+		  	alert('An error occured. Make sure you are logged in. Refresh the page and try again.');
+
+		  }
+
+		});
+
+	}
+
+
+
 	$('#action-complete-registration').on('click', function(event) {
 		event.preventDefault();
 
-		$('.registration-details').each(function(index, el) {	
-			var $this = $(this);
-			setTimeout(function(){
+		do_confirm();
 
-				//Save the data via ajax, show success form, and clear existing one.
-				var input_data = {
-					type  : 'confirm',
-					name  : $this.find('input[name="name"]').val(),
-					email : $this.find('input[name="email"]').val(),
-					phone : $this.find('input[name="phone"]').val(),
-					hospitality_type : $this.find('select[name="hospitality_type"]').val(),
-					college_id : $('.registration-details').find('input[name="college_id"]').val(),
-					_token: _token
-				};
-
-				$('#loading-animation').show();
-
-
-
-				//Save
-				$.ajax({
-				  url: '{{ URL::route('software_student_registration_save') }}',
-				  type: 'POST',
-				  dataType: 'json',
-				  data: input_data,
-				  success: function(data, textStatus, xhr) {
-				  	$('#loading-animation').hide();
-
-				  	if(data.result == 'success'){
-				  		//Show success
-				  		var clone = $('.registration-success').first().clone();
-				  		clone.find('.data-name').html(data.name);
-				  		clone.find('.data-email').html(data.email);
-				  		clone.find('.data-phone').html(data.phone);
-				  		clone.find('.data-college').html(data.college);
-				  		clone.find('.data-hospitality').html(data.hospitality);
-				  		clone.find('.data-id').html(data.id);
-				  		clone.data('hospitality', data.hospitality_yn);
-				  		clone.appendTo('#registration-success-container');
-				  		clone.fadeIn(200);
-
-				  		//Clear existing
-				  		init_college();
-				  		$('.registration-details').find('input[type="text"]').val('');
-				  		$('.registration-details').find('select[name="hospitality_type"]').val(0);
-
-				  		//Update Total
-				  		var reg_total = ($('.registration-success').length - 1)*value_reg;
-				  		$('#registration-total').html(reg_total);
-
-				  		var $hosp = $('.registration-success').filter(function() { 
-				  		  return $(this).data("hospitality") == 'yes'; 
-				  		});
-
-				  		var hosp_total = ($hosp.length)*value_hosp;
-				  		$('#hospitality-total').html(hosp_total);
-
-				  		$('#net-total').html(reg_total+hosp_total);
-				  	}else{
-
-				  	}
-				  },
-				  error: function(xhr, textStatus, errorThrown) {
-				  	$('#loading-animation').hide();
-				  	alert('An error occured. Make sure you are logged in. Refresh the page and try again.');
-				  }
-
-				});
-
-				$this.fadeOut(300);
-			}, index*600);
-		});
-
-	
-		$('#action-complete-registration').remove();
 	});
+
+
 
 
 });

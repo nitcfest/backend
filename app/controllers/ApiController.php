@@ -775,7 +775,7 @@ class ApiController extends BaseController {
 	public function userSearch(){
 
 		//Make sure user is logged in.
-		if(Auth::user()->check()){
+		if(Auth::user()->check() || Auth::manager()->check()){
 			// $user =  Auth::user()->get();
 		}else{
 			return Response::json(['result'=>'fail', 'reason'=>'not_logged_in'])->setCallback(Input::get('callback'));

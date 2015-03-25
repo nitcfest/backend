@@ -25,7 +25,7 @@ Workshop Registration
 <div class="row">
     <div class="col-lg-12">
         <p>Workshops do not need a confirmed ID to register for. </p>
-		<button type="button" class="btn btn-info btn-lg"><span class="glyphicon glyphicon-plus"></span> New Workshop Registration</button>
+		<a href="{{URL::route('software_workshop_registration_new')}}" class="btn btn-info btn-lg"><span class="glyphicon glyphicon-plus"></span> New Workshop Registration</a>
     	<br><br>
     	<table class="table table-striped table-hover" id="workshop_table">
     	    <thead>
@@ -43,7 +43,8 @@ Workshop Registration
     	        <?php $i=0; ?>
     	        @foreach ($registrations as $registration)
     	           <?php $i++; ?>
-    	           <tr>
+    	           <tr @if($registration->confirmation == 1) style="background: #E1EDC9;" @endif
+                   >
     	               <td>{{$i}}</td>
     	               <td>{{$registration->event->name }}</td>
     	               <td>{{$registration->event_code.$registration->team_code }}</td>
@@ -58,9 +59,9 @@ Workshop Registration
     	               </td>
     	               <td>{{count($registration->team_members) }}</td>
     	               <td>
-    	               		<a href="#" class="btn btn-xs btn-default btn-block"><span class="glyphicon glyphicon-ok"></span> Confirm </a>
-							<a href="#" class="btn btn-xs btn-default btn-block"><span class="glyphicon glyphicon-pencil"></span> Edit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>    	               	
-    	               </td>
+    	               		@if($registration->confirmation != 1)<a href="{{ URL::route('software_workshop_registration_confirm') }}?id={{$registration->id}}" class="btn btn-xs btn-default btn-block"><span class="glyphicon glyphicon-ok"></span> Confirm </a>@endif
+    	                   <a href="{{ URL::route('software_workshop_registration_details',$registration->id) }}" class="btn btn-xs btn-default btn-block"><span class="glyphicon glyphicon-stats"></span> View Details </a>
+                       </td>
     	           </tr>
     	        @endforeach
     	    </tbody>
