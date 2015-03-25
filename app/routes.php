@@ -418,16 +418,11 @@ Route::group(array(
 	    	'uses'=> 'SoftwareController@workshopRegistrationDetails'
 	    	))->where('id', '[0-9]+');
 
+
     	Route::get('software/workshop_registration/confirm', array(
 	    	'before' => 'role.software',
 	    	'as' => 'software_workshop_registration_confirm',
 	    	'uses'=> 'SoftwareController@workshopRegistrationConfirm'
-	    	));
-
-    	Route::post('software/workshop_registration/confirm', array(
-	    	'before' => 'role.software',
-	    	'as' => 'software_workshop_registration_confirm_post',
-	    	'uses'=> 'SoftwareController@workshopRegistrationConfirmPost'
 	    	));
 
     	Route::get('software/workshop_registration/new', array(

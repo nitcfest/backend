@@ -35,10 +35,12 @@ Event Registration Details
               <td>Event Code</td>
               <td>{{$team->event->event_code}}</td>
             </tr>
+            
             <tr>
               <td>Team Code</td>
-              <td>{{$team->event->event_code}}{{$team->team_code}}</td>
+              <td>@if($team->confirmation == 1)<h4><strong>{{$team->event->event_code}}{{$team->team_code}}</strong></h4>@else - @endif</td>
             </tr>
+            
             <tr>
               <td>Team Members Count</td>
               <td>{{count($team->team_members)}}</td>

@@ -537,34 +537,7 @@ class SoftwareController extends BaseController {
 	}
 
 
-
 	public function workshopRegistrationConfirm(){
-		//We are currently supporting Workshops with 1 participant only.
-		//This can be extended - see the events section.
-
-
-		$team_id = Input::get('id');
-
-		$team = Team::with('team_members.details.college','event')->where('id','=',$team_id)->get();
-
-		$workshops_id = $this->workshops_id();
-
-		if($team->count()==0){
-			return Redirect::route('software_workshop_registration');
-		}
-
-		$team = $team->first();
-
-		if($team->event->category_id != $workshops_id){
-			return Redirect::route('software_workshop_registration');
-		}
-
-
-		return View::make('software.workshop_registration_confirm', array('team'=>$team));
-
-	}
-
-	public function workshopRegistrationConfirmPost(){
 		$team_id = Input::get('id');
 
 		$team = Team::with('team_members.details.college','event')->where('id','=',$team_id)->get();
@@ -644,6 +617,7 @@ class SoftwareController extends BaseController {
 		$team->event_code = $event_code;
 		$team->team_code = $new_team_code;
 		$team->owner_id = $owner_id;
+		$team->confirmation = 1;
 		$team->save();
 
 		foreach ($team_members as $member_id) {
