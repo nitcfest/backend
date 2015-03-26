@@ -920,10 +920,106 @@ class SoftwareController extends BaseController {
 
 	public function hospitalityManager(){
 
-		$registrations = Registration::where('hospitality_confirm', '=', 1)->get();
+		$registrations = Registration::with('hospitality')->where('hospitality_confirm', '=', 1)->get();
 
-		return View::make('software.hospitality_manager', ['registrations'=>$registrations]);
+		$team_captains = Hospitality::with('registration')->get();
+
+		return View::make('software.hospitality_manager', ['registrations'=>$registrations, 'team_captains'=>$team_captains]);
 	}
+
+	public function hospitalityAllocate(){
+
+		$registrations = Registration::with('hospitality')->where('hospitality_confirm', '=', 1)->get();
+
+		$registrations = $registrations->filter(function($registration){
+			if($registration->hospitality){
+				if($registration->hospitality->captain_id != NULL)
+					return 0;
+			}
+
+			return 1;
+		});
+
+		return View::make('software.hospitality_allocate', ['registrations'=>$registrations]);
+	}
+
+
+	public function hospitalityAllocateDo(){
+
+		$ids = json_decode(Input::get('ids'));
+		
+		$registrations = Registration::with('college')->whereIn('id',$ids)->get();
+
+		$registrations = $registrations->filter(function($registration){
+			if($registration->hospitality){
+				if($registration->hospitality->captain_id != NULL)
+					return 0;
+			}
+
+			return 1;
+		});
+
+		if($registrations->count() == 0)
+			return Redirect::route('software_student_registration');
+
+
+		return View::make('software.hospitality_allocate_do', array('registrations'=>$registrations));
+	}
+
+	public function hospitalityAllocateDoAjax(){
+
+		$rules = array(
+			'id' => 'required|numeric|exists:registrations,id',
+			'location' => 'required|min:1',
+			'room_no' => 'required|min:1',
+			'bed_no' => 'required|min:1',
+			'team_captain' => 'required|numeric|exists:registrations,id',
+			);
+
+		$validator = Validator::make(Input::all(), $rules);
+
+		if($validator->fails())
+		{
+			$print = '';
+		    $messages = $validator->messages();
+
+		    foreach ($messages->all() as $message)
+		    {
+		    	$print.= $message."<br>";   
+		    }
+
+		    return Response::json(['result'=>'fail', 'error_messages'=>$print ])->setCallback(Input::get('callback'));
+		}
+
+		$hospitality = Hospitality::where('registration_id','=',Input::get('id'));
+		if($hospitality->count()>0)
+			return Response::json(['result'=>'fail', 'error_messages'=>'This student is already registered for hospitality.' ])->setCallback(Input::get('callback'));
+
+
+		$hospitality = new Hospitality;
+		$hospitality->captain_id = Input::get('team_captain');
+		$hospitality->registration_id = Input::get('id');
+		$hospitality->location = Input::get('location');
+		$hospitality->room_no = Input::get('room_no');
+		$hospitality->bed_no = Input::get('bed_no');
+		$hospitality->save();	
+
+
+		return Response::json([
+			'result'=>'success',
+		]);
+		
+
+	}
+
+	public function hospitalityShowTeam(){
+		$team_captain = Input::get('team_captain');
+
+		$hospitality = Hospitality::with('registration.college')->where('captain_id','=',$team_captain)->get();
+		
+		return View::make('software.hospitality_list', array('hospitality'=>$hospitality));
+	}
+
 
 
 

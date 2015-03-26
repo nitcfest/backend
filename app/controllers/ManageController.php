@@ -114,6 +114,9 @@ class ManageController extends BaseController {
 		if(in_array($manager->role, [9,10,11]))
 			return Redirect::route('software_student_registration');
 
+		if(in_array($manager->role, [12]))
+			return Redirect::route('software_hospitality_manager');
+
 		$events_count = Events::where('validated','=',true)->count();
 		$managers_count = Manager::where('validated','=',true)->count();
 
@@ -886,7 +889,7 @@ class ManageController extends BaseController {
 				break;
 
 			case 4:
-				return 'Hospitality'; //Hospitality, Add Notes.
+				return 'Hospitality Online'; //Hospitality, Add Notes.
 				break;
 
 			case 5:
@@ -918,6 +921,11 @@ class ManageController extends BaseController {
 
 			case 11:
 				return 'Registration - Level 2';
+				break;
+
+
+			case 12:
+				return 'Hospitality Manager';
 				break;
 
 

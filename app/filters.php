@@ -154,6 +154,14 @@ Route::filter('role.software_level2', function()
 });
 
 
+Route::filter('role.hospitality_manager', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[12,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
 
 
 Route::filter('auth.user', function()

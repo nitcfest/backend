@@ -68,7 +68,7 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        @if(!in_array(Auth::manager()->get()->role,[9,10,11]))
+                        @if(!in_array(Auth::manager()->get()->role,[9,10,11,12]))
                         <li>
                             <a href="{{ URL::route('manager_dashboard') }}"><i class="fa fa-fw fa-lg fa-dashboard " style="vertical-align: middle;"></i> Dashboard</a>
                         </li>
@@ -166,12 +166,16 @@
 
                         <hr>
 
+
                         <li>
                             <a href="{{ URL::route('software_event_list') }}"><i class="fa fa-fw fa-lg fa-list" style="vertical-align: middle;"></i> Event List</a>
                         </li>
 
                         <hr>
 
+                        @endif
+
+                        @if(in_array(Auth::manager()->get()->role,[12,21]))
                         <li>
                             <a href="{{ URL::route('software_hospitality_manager') }}"><i class="fa fa-fw fa-lg fa-bed" style="vertical-align: middle;"></i> Hospitality Manager</a>
                         </li>

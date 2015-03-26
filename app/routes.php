@@ -514,12 +514,35 @@ Route::group(array(
 
 
 
-    	Route::get('software/hospitality_manager', array(
-	    	'before' => 'role.software',
+    	Route::get('software/hospitality', array(
+	    	'before' => 'role.hospitality_manager',
 	    	'as' => 'software_hospitality_manager',
 	    	'uses'=> 'SoftwareController@hospitalityManager'
 	    	));
 
+    	Route::get('software/hospitality/allocate', array(
+	    	'before' => 'role.hospitality_manager',
+	    	'as' => 'software_hospitality_allocate',
+	    	'uses'=> 'SoftwareController@hospitalityAllocate'
+	    	));
+
+    	Route::get('software/hospitality/allocate_do', array(
+	    	'before' => 'role.hospitality_manager',
+	    	'as' => 'software_hospitality_allocate_do',
+	    	'uses'=> 'SoftwareController@hospitalityAllocateDo'
+	    	));
+
+    	Route::post('software/hospitality/allocate_do', array(
+	    	'before' => 'role.hospitality_manager',
+	    	'as' => 'software_hospitality_allocate_do_ajax',
+	    	'uses'=> 'SoftwareController@hospitalityAllocateDoAjax'
+	    	));
+
+    	Route::post('software/hospitality/show', array(
+	    	'before' => 'role.hospitality_manager',
+	    	'as' => 'software_hospitality_show_team',
+	    	'uses'=> 'SoftwareController@hospitalityShowTeam'
+	    	));
 
 
 

@@ -28,4 +28,8 @@ class Registration extends Eloquent implements UserInterface, RemindableInterfac
 		return $this->belongsTo('College')->select('id', 'name');
 	}
 
+	public function hospitality(){
+		return $this->hasOne('Hospitality');
+	}
+
 }

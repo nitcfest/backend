@@ -45,9 +45,10 @@ Managers
                         <option value="9">Registration - Basic</option>
                         <option value="10">Registration - Level 1</option>
                         <option value="11">Registration - Level 2</option>
+                        <option value="12">Hospitality Manager</option>
 
-                        <option value="4">Hospitality</option>
                         <option value="5">Program Committee</option>
+                        <option value="4">Hospitality - Online</option>
                         <option value="6">Results Entry</option>
                         <option value="7">Printing Only</option>
                         <option value="21">Super Admin</option>
