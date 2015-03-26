@@ -40,7 +40,12 @@ Managers
                         <option value="2">Event Manager</option>
                         <option value="8">Proofreader</option>
                         <option value="1">Website Admin</option>
-                        <option value="3">Registration</option>
+                        <option value="3">Online Registration</option>
+
+                        <option value="9">Registration - Basic</option>
+                        <option value="10">Registration - Level 1</option>
+                        <option value="11">Registration - Level 2</option>
+
                         <option value="4">Hospitality</option>
                         <option value="5">Program Committee</option>
                         <option value="6">Results Entry</option>

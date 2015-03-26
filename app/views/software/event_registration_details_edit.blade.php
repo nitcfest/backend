@@ -83,7 +83,7 @@ Edit Event Registration
                        <td>{{$team_member->details->name }}</td>
                        <td>{{$team_member->details->email }}</td>
                        <td>{{$team_member->details->phone }}</td>
-                       <td>{{$team_member->details->college->name }}</td>
+                       <td>@if($team_member->details->college){{$team_member->details->college->name }}@endif</td>
                        <td><a href="{{URL::route('software_event_registration_remove_member')}}?team_id={{$team->id}}&member_id={{$team_member->details->id}}" class="btn btn-xs btn-danger"><span class="glyphicon glyphicon-trash"></span> Remove from Team</a></td>
                    </tr>
                 @endforeach

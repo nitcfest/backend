@@ -29,6 +29,16 @@ Verify Colleges
 
                 <br><br><br>
 
+                <form action="{{URL::route('manager_verify_colleges_add')}}" method="POST" role="form">
+                    <div class="form-group">
+                        <label>Add College</label>
+                        <div class="input-group">
+                            <input type="text" name="college_name" class="form-control" placeholder="Complete name of the college">
+                            <span class="input-group-btn"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Add College</button></span>
+                        </div>
+                    </div>
+                </form>
+
 
             </div>
 

@@ -95,7 +95,7 @@ Route::filter('role.homepage', function()
 
 Route::filter('role.colleges', function()
 {
-	if(!in_array(Auth::manager()->get()->role,[1,3,8,21])){
+	if(!in_array(Auth::manager()->get()->role,[1,3,8,10,11,21])){
 		return View::make('error_unauthorized');
 	}
 });
@@ -118,6 +118,40 @@ Route::filter('role.hospitality', function()
 });
 
 
+
+Route::filter('role.hospitality', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[3,4,5,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
+
+Route::filter('role.software', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[9,10,11,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
+//For Results, Block Events, Verify/Add Colleges
+Route::filter('role.software_level1', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[10,11,21])){
+		return View::make('error_unauthorized');
+	}
+});
+
+
+//For Statistics, Admin Features
+Route::filter('role.software_level2', function()
+{
+	if(!in_array(Auth::manager()->get()->role,[11,21])){
+		return View::make('error_unauthorized');
+	}
+});
 
 
 

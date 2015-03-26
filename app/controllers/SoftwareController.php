@@ -13,7 +13,7 @@ class SoftwareController extends BaseController {
 		$workshops_id = $this->workshops_id();
 
 		$reg_confirm_count = Registration::where('registration_confirm','=',1)->count();
-		$hos_confirm_count = Registration::where('registration_confirm','=',1)->where('hospitality_confirm','=',1)->count();
+		$hos_confirm_count = Registration::where('hospitality_confirm','=',1)->count();
 
 		$events_confirm_count = 0;
 		$workshops_confirm_count = 0;
@@ -36,9 +36,190 @@ class SoftwareController extends BaseController {
 		return View::make('software.statistics', $data);
 	}
 
+
+	public function admin(){
+		$registrations = Registration::where('registration_confirm','=',1)->get(['id','name']);
+
+
+		$teams = Team::where('confirmation','=',1)->get(['id','event_code', 'team_code']);
+
+		return View::make('software.admin', ['confirmed_teams'=>$teams, 'confirmed_registrations'=>$registrations]);
+	}
+
+	public function adminEditRegistration(){
+
+		$id = Input::get('id');
+
+		$registration = Registration::where('id','=',$id)->whereNotNull('college_id')->get();
+
+		if($registration->count() == 0)
+			return Redirect::route('software_admin');
+	
+		$registration = $registration->first();		
+
+		return View::make('software.admin_edit_registration', ['registration'=>$registration]);
+	}
+
+	public function adminSaveRegistration(){
+
+		$rules = array(
+			'name' => 'required|min:3',
+			'college_id' => 'required|numeric|exists:colleges,id,validated,1',
+			'hospitality_type' => 'required|in:0,1,2',
+			'hospitality_confirm' => 'required|in:0,1',
+			'registration_confirm' => 'required|in:0,1',
+			'phone' => 'max:15',
+			);
+
+		$validator = Validator::make(Input::all(), $rules);
+
+		$validator->sometimes('email', 'required|email', function($input)
+		{
+		    return $input->email != '';
+		});
+
+
+		if($validator->fails())
+		{
+			$print = '';
+		    $messages = $validator->messages();
+
+		    foreach ($messages->all() as $message)
+		    {
+		    	$print.= $message."<br>";   
+		    }
+
+		    Session::flash('error', $print);
+		    return Redirect::route('software_admin_edit_registration', ['id'=>Input::get('id')]);
+		}
+
+		if(Input::get('email', '') != ''){
+			//Make sure email doesn't already exist
+			$registration = Registration::where('email','=',Input::get('email'))->get();
+
+			if($registration->count() > 0){
+				if($registration->first()->id != Input::get('id')){
+					Session::flash('error', 'This email address already exists for another registration.');
+					return Redirect::route('software_admin_edit_registration', ['id'=>Input::get('id')]);
+				}
+			}
+		}
+
+
+
+		$registration = Registration::where('id','=', Input::get('id'))->get();
+
+		if($registration->count()==0)
+			return Redirect::route('software_admin');
+
+		$registration = $registration->first();
+
+		$registration->name = Input::get('name', '');
+
+		if(Input::get('email', '') != '')
+			$registration->email = Input::get('email');
+
+		$registration->phone = Input::get('phone', '');
+		$registration->college_id = Input::get('college_id', '');
+
+		$registration->hospitality_type = Input::get('hospitality_type', '');
+		$registration->hospitality_confirm = Input::get('hospitality_confirm', '');
+		$registration->registration_confirm = Input::get('registration_confirm', '');
+
+		$registration->save();
+
+		return Redirect::route('software_student_registration_details', $registration->id);
+	}
+
+	public function adminUnconfirmTeam(){
+		$team_id = Input::get('team_id');
+
+		$teams = Team::where('confirmation','=',1)->where('id','=',$team_id)->get();
+		
+		if($teams->count() == 0)
+			return Redirect::route('software_admin');
+
+		$team = $teams->first();
+		$team->confirmation = 0;
+		$team->save();
+
+		Session::flash('success', 'Team unconfirmed.');
+		return Redirect::route('software_admin');
+	}
+
+
+	public function results(){
+
+		$events = Events::with('category')->where('validated','=',1)->get(array('event_code','category_id','name'));
+
+		//ID of events in event_categories
+		$events_id = 1;
+
+		$selected_events = $events->filter(function($event) use($events_id){
+			if($event->category->parent_id != $events_id )
+				return 0;
+
+			return 1;
+		});
+
+
+
+
+
+		return View::make('software.results', array('events'=>$selected_events));
+	}		
+
+	public function blockEvents(){
+
+		$events = Events::with('category')->where('validated','=',1)->orderBy('name')->get(array('event_code','category_id','name','registration_enabled'));
+
+		//ID of events in event_categories
+		$events_id = 1;
+		$workshops_id = $this->workshops_id();
+
+		$selected_events = $events->filter(function($event) use($workshops_id, $events_id){
+			if($event->category_id != $workshops_id && $event->category->parent_id != $events_id )
+				return 0;
+
+			return 1;
+		});
+
+		$blocked_events = $selected_events->filter(function($event){
+			if($event->registration_enabled == 0)
+				return 1;
+			return 0;
+		});
+
+		$not_blocked = $selected_events->filter(function($event){
+			if($event->registration_enabled == 0)
+				return 0;
+			return 1;
+		});
+
+
+		return View::make('software.block_events',  array('blocked_events'=>$blocked_events, 'not_blocked'=>$not_blocked));
+	}
+
+	public function blockEventsDo(){
+		$event_code = Input::get('event_code');
+		$to = Input::get('to');
+
+		if($to == 1){
+			$event = Events::where('event_code','=',$event_code)->first();
+			$event->registration_enabled = 1;
+			$event->save();
+			return Redirect::route('software_block_events');
+		}else if($to == 0){
+			$event = Events::where('event_code','=',$event_code)->first();
+			$event->registration_enabled = 0;
+			$event->save();
+			return Redirect::route('software_block_events');
+		}
+	}
+
 	public function studentRegistration(){
 
-		$registrations = Registration::with('college')->whereNotNull('college_id')->get();
+		$registrations = Registration::with('college')->get();
 
 		return View::make('software.student_registration', array('registrations' => $registrations ));
 	}
@@ -75,7 +256,8 @@ class SoftwareController extends BaseController {
 				'name' => 'required|min:3',
 				'college_id' => 'required|numeric|exists:colleges,id,validated,1',
 				'hospitality_type' => 'required|in:0,1,2',
-				'phone' => 'required|min:10|max:15'
+				'phone' => 'required|min:10|max:15',
+				'registration_type' => 'required|in:0,1',
 				);
 
 			$validator = Validator::make(Input::all(), $rules);
@@ -108,7 +290,11 @@ class SoftwareController extends BaseController {
 
 			$registration->phone = Input::get('phone', '');
 			$registration->college_id = Input::get('college_id', '');
-			$registration->registration_confirm = 1;
+
+			if(Input::get('registration_type') == 1)
+				$registration->registration_confirm = 1;
+			else
+				$registration->registration_confirm = 0;
 
 			$registration->hospitality_type = Input::get('hospitality_type', '');
 			
@@ -130,6 +316,11 @@ class SoftwareController extends BaseController {
 			else
 				$hospitality_yn = 'no';
 
+			if($registration->registration_confirm == 1)
+				$registration_yn = 'yes';
+			else
+				$registration_yn = 'no';
+
 			return Response::json([
 				'result'=>'success',
 				'name'=> $registration->name,
@@ -139,6 +330,7 @@ class SoftwareController extends BaseController {
 				'college' => $registration->college->name,
 				'hospitality' => $hospitality,
 				'hospitality_yn' => $hospitality_yn,
+				'registration_yn' => $registration_yn,
 			]);
 
 
@@ -149,7 +341,8 @@ class SoftwareController extends BaseController {
 				'name' => 'required|min:3',
 				'college_id' => 'required|numeric|exists:colleges,id,validated,1',
 				'hospitality_type' => 'required|in:0,1,2',
-				'phone' => 'required|min:10|max:15'
+				'phone' => 'required|min:10|max:15',
+				'registration_type' => 'required|in:0,1',
 				);
 
 			$validator = Validator::make(Input::all(), $rules);
@@ -173,6 +366,16 @@ class SoftwareController extends BaseController {
 			    return Response::json(['result'=>'fail', 'error_messages'=>$print ])->setCallback(Input::get('callback'));
 			}
 
+			if(Input::get('email', '') != ''){
+				//Make sure email doesn't already exist
+				$registration = Registration::where('email','=',Input::get('email'))->get();
+
+				if($registration->count() > 0){
+					if($registration->first()->id != Input::get('id'))
+						return Response::json(['result'=>'fail', 'error_messages'=>'This email address already exists for another registration.' ])->setCallback(Input::get('callback'));
+				}
+			}
+
 
 			$registration = Registration::where('id','=',Input::get('id'))->first();
 			$registration->name = Input::get('name', '');
@@ -184,7 +387,12 @@ class SoftwareController extends BaseController {
 			$registration->college_id = Input::get('college_id', '');
 			$registration->hospitality_type = Input::get('hospitality_type', '');
 
-			$registration->registration_confirm = 1;		
+			if(Input::get('registration_type') == 1)
+				$registration->registration_confirm = 1;
+			else
+				$registration->registration_confirm = 0;
+
+			
 			if(Input::get('hospitality_type', '') == 1 || Input::get('hospitality_type', '') == 2)			
 				$registration->hospitality_confirm = 1;
 
@@ -203,6 +411,11 @@ class SoftwareController extends BaseController {
 			else
 				$hospitality_yn = 'no';
 
+			if($registration->registration_confirm == 1)
+				$registration_yn = 'yes';
+			else
+				$registration_yn = 'no';
+			
 			return Response::json([
 				'result'=>'success',
 				'name'=> $registration->name,
@@ -212,6 +425,7 @@ class SoftwareController extends BaseController {
 				'college' => $registration->college->name,
 				'hospitality' => $hospitality,
 				'hospitality_yn' => $hospitality_yn,
+				'registration_yn' => $registration_yn,
 			]);
 			
 			
@@ -263,6 +477,9 @@ class SoftwareController extends BaseController {
 				if($member->details->registration_confirm == 0)
 					$confirmed = 0;
 			});
+
+			if($team->event->registration_enabled == 0)
+				$confirmed = 0;
 
 			$team->confirmable = $confirmed;
 			return $team;			
@@ -343,6 +560,9 @@ class SoftwareController extends BaseController {
 			if($member->details->registration_confirm == 0)
 				$confirmed = 0;
 		});
+
+		if($team->event->registration_enabled == 0)
+			$confirmed = 0;
 
 		$team->confirmable = $confirmed;
 
@@ -426,7 +646,7 @@ class SoftwareController extends BaseController {
 	}
 
 	public function eventRegistrationNew(){
-		$events = Events::with('category')->where('validated','=',1)->get(array('event_code','category_id','name','team_min','team_max'));
+		$events = Events::with('category')->where('validated','=',1)->where('registration_enabled','=',1)->orderBy('name')->get(array('event_code','category_id','name','team_min','team_max'));
 
 		//ID of events in event_categories
 		$events_id = 1;
@@ -632,6 +852,69 @@ class SoftwareController extends BaseController {
 
 
 
+	public function eventList(){
+
+		$events = Events::with('category')->where('validated','=',1)->get(array('event_code','category_id','name'));
+
+		//ID of events in event_categories
+		$events_id = 1;
+		$workshops_id = $this->workshops_id();
+
+		$selected_events = $events->filter(function($event) use($workshops_id, $events_id){
+			if($event->category_id != $workshops_id && $event->category->parent_id != $events_id )
+				return 0;
+
+			return 1;
+		});
+
+
+		return View::make('software.event_list',  array('events'=>$selected_events));
+	}
+
+	public function eventListPost(){
+		$events = Events::with('category')->where('validated','=',1)->get(array('event_code','category_id','name'));
+
+		//ID of events in event_categories
+		$events_id = 1;
+		$workshops_id = $this->workshops_id();
+
+		$selected_events = $events->filter(function($event) use($workshops_id, $events_id){
+			if($event->category_id != $workshops_id && $event->category->parent_id != $events_id )
+				return 0;
+
+			return 1;
+		});
+
+		$event_code = Input::get('event_code');
+
+		$event = Events::where('event_code','=',$event_code)->get();
+		if($event->count() == 0)
+			return Redirect::route('software_event_list');		
+
+		$teams = Team::with('team_members')->where('event_code','=',$event_code)->where('confirmation','=',1)->orderBy('team_code','asc')->get();
+
+		$on_spot = Team::where('event_code','=',$event_code)->orderBy('team_code','desc')->first()->team_code + 1;
+
+		$on_spot = $event_code.$on_spot;
+
+		return View::make('software.event_list',  array('events'=>$selected_events,'event'=>$event->first(), 'teams'=>$teams, 'on_spot'=>$on_spot));
+	}
+
+	public function eventListPrint(){
+		$event_code = Input::get('event_code');
+
+		$event = Events::where('event_code','=',$event_code)->get();
+		if($event->count() == 0)
+			return Redirect::route('software_event_list');
+
+		$teams = Team::with('team_members')->where('event_code','=',$event_code)->where('confirmation','=',1)->orderBy('team_code','asc')->get();
+
+		$on_spot = Team::where('event_code','=',$event_code)->orderBy('team_code','desc')->first()->team_code + 1;
+
+		$on_spot = $event_code.$on_spot;
+
+		return View::make('software.event_list_print',  array('event'=>$event->first(), 'teams'=>$teams, 'on_spot'=>$on_spot));
+	}
 
 
 

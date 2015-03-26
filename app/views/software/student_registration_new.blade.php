@@ -28,10 +28,11 @@ New Registration
 <div class="row">
     <div class="col-md-10">
     	<div id="registration-success-container">
-    		<div class="well registration-success" style="background:#E1EDC9; display:none; " data-hospitality="">
+    		<div class="well registration-success" style="background:#E1EDC9; display:none; " data-hospitality="" data-registration="">
     			<div class="row">
     				<div class="col-md-3">
     					<strong>ID<br><h1><strong>{{Config::get('app.id_prefix')}}<span class="data-id"></span></strong></h1></strong>
+    					<span class="workshops-only-text" style="display:none;">Workshops Only</span>
     				</div>
     				<div class="col-md-3">
     					<strong>Name</strong><br><span class="data-name"></span>
@@ -58,14 +59,16 @@ New Registration
 			<div class="well registration-details">
 				<form class="form-inline" role="form" method="POST">
     				<div class="form-group">
-    					<input type="text" class="form-control" name="name" placeholder="Name" autocomplete="off">
+    					<input style="width: 300px;" type="text" class="form-control" name="name" placeholder="Name" autocomplete="off">
     				</div>
     				<div class="form-group">
-    					<input type="text" class="form-control" name="email" placeholder="Email Address" autocomplete="off">
+    					<input style="width: 200px;" type="text" class="form-control" name="email" placeholder="Email Address" autocomplete="off">
     				</div>
     				<div class="form-group">
     					<input type="text" class="form-control" name="phone" placeholder="Phone" autocomplete="off">
     				</div>
+
+    				<br><br>
     				<div class="form-group">
     					<select name="hospitality_type" class="form-control">
     						<option value="0">No Accomodation</option>
@@ -73,12 +76,20 @@ New Registration
     						<option value="2">Yes, Female</option>
     					</select>
     				</div>
+    				<div class="form-group">
+    					<select name="registration_type" class="form-control">
+    						<option value="1" selected="selected">Ragam Registration</option>
+    						<option value="0">Workshops Only</option>
+    					</select>
+    				</div>
     				<br><br>
     				<div class="form-group college-container">
     					<select name="college_id" class="college_select" style="width:500px;">
     					    <option value="0">Loading...</option>
-    					</select> College
+    					</select>
+    					&nbsp;College
     				</div>
+
     			</form>
 			</div>
 		</div>
@@ -199,6 +210,7 @@ $(function() {
 			phone : $('.registration-details').find('input[name="phone"]').val(),
 			hospitality_type : $('.registration-details').find('select[name="hospitality_type"]').val(),
 			college_id : $('.registration-details').find('select[name="college_id"]').val(),
+			registration_type : $('.registration-details').find('select[name="registration_type"]').val(),
 			_token: _token
 		};
 
@@ -224,16 +236,33 @@ $(function() {
 		  		clone.find('.data-hospitality').html(data.hospitality);
 		  		clone.find('.data-id').html(data.id);
 		  		clone.data('hospitality', data.hospitality_yn);
+		  		clone.data('registration', data.registration_yn);
+		  		
+		  		if(data.registration_yn == 'no'){
+		  			clone.css({
+		  				backgroundColor: '#ABB4E9',
+		  			});
+		  			clone.find('.workshops-only-text').show();
+		  		}
+
 		  		clone.appendTo('#registration-success-container');
 		  		clone.slideDown(200);
+
+
 
 		  		//Clear existing
 		  		$('.registration-details').find('input[type="text"]').val('');
 		  		$('.registration-details').find('select[name="hospitality_type"]').val(0);
 
 		  		//Update Total
-		  		var reg_total = ($('.registration-success').length - 1)*value_reg;
+
+		  		var $reg = $('.registration-success').filter(function() { 
+		  		  return $(this).data("registration") == 'yes'; 
+		  		});
+
+		  		var reg_total = ($reg.length)*value_reg;
 		  		$('#registration-total').html(reg_total);
+
 
 		  		var $hosp = $('.registration-success').filter(function() { 
 		  		  return $(this).data("hospitality") == 'yes'; 
@@ -251,6 +280,8 @@ $(function() {
 		  		$('.registration-details').css({
 		  			backgroundColor: '',
 		  		});
+
+
 
 		  		if(last == true){
 		  			$('#action-complete-registration').remove();

@@ -51,10 +51,11 @@ Student Registration
     <div class="col-md-10">    	
 
     	<div id="registration-success-container">
-    		<div class="well registration-success" style="background:#E1EDC9; display:none; " data-hospitality="">
+    		<div class="well registration-success" style="background:#E1EDC9; display:none; " data-hospitality="" data-registration="">
     			<div class="row">
     				<div class="col-md-3">
     					<strong>ID<br><h1><strong>{{Config::get('app.id_prefix')}}<span class="data-id">10001</span></strong></h1></strong>
+    					<span class="workshops-only-text" style="display:none;">Workshops Only</span>
     				</div>
     				<div class="col-md-3">
     					<strong>Name</strong><br><span class="data-name">Saneem</span>
@@ -91,14 +92,16 @@ Student Registration
     					<input type="text" class="form-control" value="{{Config::get('app.id_prefix').$registration->id}}" readonly>
     				</div>
     				<div class="form-group">
-    					<input type="text" class="form-control" name="name" placeholder="Name" value="{{$registration->name}}">
+    					<input style="width: 300px;" type="text" class="form-control" name="name" placeholder="Name" value="{{$registration->name}}">
     				</div>
     				<div class="form-group">
-    					<input type="text" class="form-control" name="email" placeholder="Email Address" value="{{$registration->email}}">
+    					<input style="width: 200px;" type="text" class="form-control" name="email" placeholder="Email Address" value="{{$registration->email}}">
     				</div>
     				<div class="form-group">
     					<input type="text" class="form-control" name="phone" placeholder="Phone" value="{{$registration->phone}}">
     				</div>
+
+    				<br><br>
     				<div class="form-group">
     					<select name="hospitality_type" class="form-control">
     						<option value="0" @if($registration->hospitality_type == 0) selected="selected" @endif>No Accomodation</option>
@@ -106,11 +109,18 @@ Student Registration
     						<option value="2" @if($registration->hospitality_type == 2) selected="selected" @endif>Yes, Female</option>
     					</select>
     				</div>
+    				<div class="form-group">
+    					<select name="registration_type" class="form-control">
+    						<option value="1" selected="selected">Ragam Registration</option>
+    						<option value="0">Workshops Only</option>
+    					</select>
+    				</div>
     				<br><br>
+
     				<div class="form-group college-container">
-    					<input type="text" class="form-control college_name" value="{{$registration->college->name}}" style="width:500px;" readonly>
+    					<input type="text" class="form-control college_name" value="@if($registration->college){{$registration->college->name}}@endif" style="width:500px;" readonly>
     					<button type="button" class="btn btn-default action-change-college"><span class="glyphicon glyphicon-pencil"></span> Change College</button>
-    					<input type="hidden" name="college_id" value="{{$registration->college->id}}">
+    					<input type="hidden" name="college_id" value="@if($registration->college){{$registration->college->id}}@endif">
     				</div>
     			</form>
 			</div>
@@ -264,6 +274,7 @@ $(function() {
 			phone : $this.find('input[name="phone"]').val(),
 			hospitality_type : $this.find('select[name="hospitality_type"]').val(),
 			college_id : $this.find('input[name="college_id"]').val(),
+			registration_type : $this.find('select[name="registration_type"]').val(),
 			_token: _token
 		};
 
@@ -288,11 +299,25 @@ $(function() {
 		  		clone.find('.data-hospitality').html(data.hospitality);
 		  		clone.find('.data-id').html(data.id);
 		  		clone.data('hospitality', data.hospitality_yn);
+		  		clone.data('registration', data.registration_yn);
+
+		  		if(data.registration_yn == 'no'){
+		  			clone.css({
+		  				backgroundColor: '#ABB4E9',
+		  			});
+		  			clone.find('.workshops-only-text').show();
+		  		}
+
 		  		clone.appendTo('#registration-success-container');
 		  		clone.fadeIn(200);
 
 		  		//Update Total
-		  		var reg_total = ($('.registration-success').length - 1)*value_reg;
+
+		  		var $reg = $('.registration-success').filter(function() { 
+		  		  return $(this).data("registration") == 'yes'; 
+		  		});
+
+		  		var reg_total = ($reg.length)*value_reg;
 		  		$('#registration-total').html(reg_total);
 
 		  		var $hosp = $('.registration-success').filter(function() { 

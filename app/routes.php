@@ -264,6 +264,12 @@ Route::group(array(
 	    	'uses'=> 'ManageController@verifyColleges'
 	    	));
 
+    	Route::post('verify_colleges/add', array(
+	    	'before' => 'role.colleges',
+	    	'as' => 'manager_verify_colleges_add',
+	    	'uses'=> 'ManageController@verifyCollegesAdd'
+	    	));
+
     	Route::get('verify_colleges/change_status', array(
     		'before' => 'role.colleges',
     		'as' => 'action_update_college_status',
@@ -304,12 +310,60 @@ Route::group(array(
 
 
     	//Registration software
+    	//#####################
 
     	Route::get('software/statistics', array(
-	    	'before' => 'role.software',
+	    	'before' => 'role.software_level2',
 	    	'as' => 'software_statistics',
 	    	'uses'=> 'SoftwareController@statistics'
 	    	));
+
+    	Route::get('software/admin', array(
+	    	'before' => 'role.software_level2',
+	    	'as' => 'software_admin',
+	    	'uses'=> 'SoftwareController@admin'
+	    	));
+
+    	Route::get('software/admin/edit_registration', array(
+	    	'before' => 'role.software_level2',
+	    	'as' => 'software_admin_edit_registration',
+	    	'uses'=> 'SoftwareController@adminEditRegistration'
+	    	));
+
+    	Route::post('software/admin/save_registration', array(
+	    	'before' => 'role.software_level2',
+	    	'as' => 'software_admin_save_registration',
+	    	'uses'=> 'SoftwareController@adminSaveRegistration'
+	    	));
+
+    	Route::post('software/admin/unconfirm_team', array(
+	    	'before' => 'role.software_level2',
+	    	'as' => 'software_admin_unconfirm_team',
+	    	'uses'=> 'SoftwareController@adminUnconfirmTeam'
+	    	));
+
+
+    	Route::get('software/results', array(
+	    	'before' => 'role.software_level1',
+	    	'as' => 'software_results',
+	    	'uses'=> 'SoftwareController@results'
+	    	));
+
+
+
+
+    	Route::get('software/block_events', array(
+	    	'before' => 'role.software_level1',
+	    	'as' => 'software_block_events',
+	    	'uses'=> 'SoftwareController@blockEvents'
+	    	));
+
+    	Route::get('software/block_events/do', array(
+	    	'before' => 'role.software_level1',
+	    	'as' => 'software_block_events_do',
+	    	'uses'=> 'SoftwareController@blockEventsDo'
+	    	));
+
 
     	Route::get('software/student_registration', array(
 	    	'before' => 'role.software',
@@ -439,6 +493,24 @@ Route::group(array(
 
 
 
+    	Route::get('software/event_list', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_list',
+	    	'uses'=> 'SoftwareController@eventList'
+	    	));
+
+    	Route::post('software/event_list', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_list_post',
+	    	'uses'=> 'SoftwareController@eventListPost'
+	    	));
+
+
+    	Route::get('software/event_list/print', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_list_print',
+	    	'uses'=> 'SoftwareController@eventListPrint'
+	    	));
 
 
 

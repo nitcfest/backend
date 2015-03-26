@@ -85,7 +85,7 @@ Event Registration Details
                        <td>{{$team_member->details->name }}</td>
                        <td>{{$team_member->details->email }}</td>
                        <td>{{$team_member->details->phone }}</td>
-                       <td>{{$team_member->details->college->name }}</td>
+                       <td>@if($team_member->details->college){{$team_member->details->college->name }}@endif</td>
                    </tr>
                 @endforeach
             </tbody>

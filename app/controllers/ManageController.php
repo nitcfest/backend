@@ -109,13 +109,17 @@ class ManageController extends BaseController {
 
 	public function index()
 	{
+		$manager = Auth::manager()->get();
+
+		if(in_array($manager->role, [9,10,11]))
+			return Redirect::route('software_student_registration');
+
 		$events_count = Events::where('validated','=',true)->count();
 		$managers_count = Manager::where('validated','=',true)->count();
 
 		$teams_count = Team::count();
 		$registrations_count = Registration::count();
 
-		$manager = Auth::manager()->get();
 
 		if($manager->role == 2 && $manager->event_code!=''){
 			//If the user is an event manager, make sure an event with such a code is available. Else, create it.
@@ -701,6 +705,31 @@ class ManageController extends BaseController {
 		return View::make('verify_colleges', array('colleges'=>$colleges));
 	}
 
+
+	public function verifyCollegesAdd(){
+		$college_name = Input::get('college_name', '');
+
+		if(strlen($college_name)<=3 || strlen($college_name)>80 ){
+			Session::flash('error', 'Invalid college name.');
+			return Redirect::route('manager_verify_colleges');
+		}
+
+		$existing = College::where('name', 'LIKE', '%'.$college_name.'%');
+		
+		if($existing->count()>0){
+			Session::flash('error', 'College exists.');
+			return Redirect::route('manager_verify_colleges');
+		}
+
+		$college = new College;
+		$college->name = $college_name;
+		$college->validated = 0;
+		$college->save();	
+
+
+		return Redirect::route('manager_verify_colleges');
+	}
+
 	public function verifyCollegesStatus(){
 		$id = Input::get('id');
 		$to = Input::get('to');
@@ -853,7 +882,7 @@ class ManageController extends BaseController {
 				break;
 
 			case 3:
-				return 'Registration'; //Registration, Hospitality, Results, Add Notes., Add news.
+				return 'Registration Online'; //Registration, Hospitality, Results, Add Notes., Add news.
 				break;
 
 			case 4:
@@ -875,6 +904,22 @@ class ManageController extends BaseController {
 			case 8:
 				return 'Proofreader'; //Edit details of an event, Print List
 				break;
+
+
+			//Registration Levels.
+
+			case 9:
+				return 'Registration - Basic';
+				break;
+
+			case 10:
+				return 'Registration - Level 1';
+				break;
+
+			case 11:
+				return 'Registration - Level 2';
+				break;
+
 
 			case 21:
 				return 'Super Admin'; //All features

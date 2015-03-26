@@ -68,9 +68,11 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
+                        @if(!in_array(Auth::manager()->get()->role,[9,10,11]))
                         <li>
                             <a href="{{ URL::route('manager_dashboard') }}"><i class="fa fa-fw fa-lg fa-dashboard " style="vertical-align: middle;"></i> Dashboard</a>
                         </li>
+                        @endif
 
                         @if(in_array(Auth::manager()->get()->role,[21]))
                         <li>
@@ -103,7 +105,7 @@
                         @endif
 
 
-                        @if(in_array(Auth::manager()->get()->role,[1,3,8,21]))
+                        @if(in_array(Auth::manager()->get()->role,[1,3,8,10,11,21]))
                         <li>
                             <a href="{{ URL::route('manager_verify_colleges') }}"><i class="fa fa-fw fa-lg fa-university" style="vertical-align: middle;"></i> Verify Colleges</a>
                         </li>
@@ -129,11 +131,29 @@
                         @endif
 
 
-                        @if(in_array(Auth::manager()->get()->role,[3,4,5,21]))
+                        @if(in_array(Auth::manager()->get()->role,[9,10,11,21]))
                         <li><hr><a>Registration Software</a></li>
+
+                        @if(in_array(Auth::manager()->get()->role,[11,21]))
                         <li>
                             <a href="{{ URL::route('software_statistics') }}"><i class="fa fa-fw fa-lg fa-area-chart" style="vertical-align: middle;"></i> Statistics</a>
                         </li>
+                        <li>
+                            <a href="{{ URL::route('software_admin') }}"><i class="fa fa-fw fa-lg fa-diamond" style="vertical-align: middle;"></i> Admin Features</a>
+                        </li>
+                        <hr>
+                        @endif
+
+                        @if(in_array(Auth::manager()->get()->role,[10,11,21]))
+                        <li>
+                            <a href="{{ URL::route('software_results') }}"><i class="fa fa-fw fa-lg fa-graduation-cap" style="vertical-align: middle;"></i> Results</a>
+                        </li>
+                        <li>
+                            <a href="{{ URL::route('software_block_events') }}"><i class="fa fa-fw fa-lg fa-warning" style="vertical-align: middle;"></i> Block Events</a>
+                        </li>
+                        <hr>
+                        @endif
+
                         <li>
                             <a href="{{ URL::route('software_student_registration') }}"><i class="fa fa-fw fa-lg fa-paper-plane" style="vertical-align: middle;"></i> Student Registration</a>
                         </li>
@@ -143,11 +163,19 @@
                         <li>
                             <a href="{{ URL::route('software_workshop_registration') }}"><i class="fa fa-fw fa-lg fa-puzzle-piece" style="vertical-align: middle;"></i> Workshop Registration</a>
                         </li>
-                        <li>
-                            <a href="{{ URL::route('software_hospitality_manager') }}"><i class="fa fa-fw fa-lg fa-bed" style="vertical-align: middle;"></i> Hospitality Manager</a>
-                        </li>
-                        @endif
 
+                        <hr>
+
+                        <li>
+                            <a href="{{ URL::route('software_event_list') }}"><i class="fa fa-fw fa-lg fa-list" style="vertical-align: middle;"></i> Event List</a>
+                        </li>
+
+                        <hr>
+
+<!--                    <li>
+                            <a href="{{ URL::route('software_hospitality_manager') }}"><i class="fa fa-fw fa-lg fa-bed" style="vertical-align: middle;"></i> Hospitality Manager</a>
+                        </li> -->
+                        @endif
 
                         
 
