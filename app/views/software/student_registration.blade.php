@@ -77,7 +77,7 @@ Student Registrations
                        <td>{{$registration->phone }}</td>
                        <td>@if ($registration->college) {{$registration->college->name }} @endif</td>
                        <td>@if ($registration->registration_confirm == 1) Yes @else No @endif</td>
-                       <td>@if ($registration->registration_confirm == 1 && $registration->hospitality_confirm == 1) Yes @else No @endif</td>
+                       <td>@if ($registration->hospitality_confirm == 1) Yes @else No @endif</td>
                        <td>
                         <a href="{{URL::route('software_student_registration_details', $registration->id)}}" target="_blank" class="action-view btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span> View</a>
                         

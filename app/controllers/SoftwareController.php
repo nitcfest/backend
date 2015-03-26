@@ -919,7 +919,10 @@ class SoftwareController extends BaseController {
 
 
 	public function hospitalityManager(){
-		return View::make('software.hospitality_manager');
+
+		$registrations = Registration::where('hospitality_confirm', '=', 1)->get();
+
+		return View::make('software.hospitality_manager', ['registrations'=>$registrations]);
 	}
 
 

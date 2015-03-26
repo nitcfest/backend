@@ -172,9 +172,9 @@
 
                         <hr>
 
-<!--                    <li>
+                        <li>
                             <a href="{{ URL::route('software_hospitality_manager') }}"><i class="fa fa-fw fa-lg fa-bed" style="vertical-align: middle;"></i> Hospitality Manager</a>
-                        </li> -->
+                        </li>
                         @endif
 
                         
