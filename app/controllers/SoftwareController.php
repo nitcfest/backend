@@ -478,7 +478,9 @@ class SoftwareController extends BaseController {
 					$confirmed = 0;
 			});
 
-			if($team->event->registration_enabled == 0)
+
+			//Enable program committee to add new registrations to blocked events
+			if($team->event->registration_enabled == 0 && !in_array(Auth::manager()->get()->role, [5])  )
 				$confirmed = 0;
 
 			$team->confirmable = $confirmed;
@@ -516,16 +518,26 @@ class SoftwareController extends BaseController {
 	public function eventRegistrationConfirmGet(){
 		$team_id = Input::get('id');
 
+		$force = Input::get('force',0);
+
+
+		if(!in_array(Auth::manager()->get()->role,[11,21]))
+			$force = 0;
+
+
 		$team = Team::with('team_members.details')->where('id','=',$team_id)->first();
 
 		if($team->count() == 0)
 			return Redirect::route('software_event_registration_details', $team_id);
 
 		$confirmed = 1;
-		$team->team_members->each(function($member) use(&$confirmed){
-			if($member->details->registration_confirm == 0)
-				$confirmed = 0;
-		});
+
+		if(!$force){
+			$team->team_members->each(function($member) use(&$confirmed){
+				if($member->details->registration_confirm == 0)
+					$confirmed = 0;
+			});
+		}
 
 		if($confirmed == 1){
 			$team->confirmation = 1;
@@ -561,7 +573,8 @@ class SoftwareController extends BaseController {
 				$confirmed = 0;
 		});
 
-		if($team->event->registration_enabled == 0)
+		//allow pc to confirm blocked events.
+		if($team->event->registration_enabled == 0  && !in_array(Auth::manager()->get()->role, [5,21])  )
 			$confirmed = 0;
 
 		$team->confirmable = $confirmed;
@@ -601,6 +614,28 @@ class SoftwareController extends BaseController {
 
 
 		return View::make('software.event_registration_details_edit',array('team'=>$team));
+	}
+
+	public function eventRegistrationDelete($id){
+
+		//Check if conditions match.
+		$team = Team::with('event')->where('id','=',$id)->where('confirmation','=',0)->get();
+
+		if($team->count() == 0){
+			return Redirect::route('software_event_registration_details', $id);
+		}
+
+		$team = $team->first();
+
+		if($team->event->registration_enabled == 1 || !in_array(Auth::manager()->get()->role,[5,21]) ){
+			return Redirect::route('software_event_registration_details', $id);
+		}
+
+		//Delete team members
+		$team_members = TeamMember::where('team_id','=',$id)->delete();
+		$team = Team::where('id','=',$id)->delete();
+
+		return Redirect::route('software_event_registration');
 	}
 
 
@@ -646,7 +681,14 @@ class SoftwareController extends BaseController {
 	}
 
 	public function eventRegistrationNew(){
-		$events = Events::with('category')->where('validated','=',1)->where('registration_enabled','=',1)->orderBy('name')->get(array('event_code','category_id','name','team_min','team_max'));
+
+		//Allow PC to add Blocked Events.
+		if(in_array(Auth::manager()->get()->role, [5])){
+			$events = Events::with('category')->where('validated','=',1)->where('registration_enabled','=',0)->orderBy('name')->get(array('event_code','category_id','name','team_min','team_max'));
+		}else{
+			$events = Events::with('category')->where('validated','=',1)->where('registration_enabled','=',1)->orderBy('name')->get(array('event_code','category_id','name','team_min','team_max'));
+		}
+
 
 		//ID of events in event_categories
 		$events_id = 1;
@@ -665,6 +707,9 @@ class SoftwareController extends BaseController {
 	public function eventRegistrationNewPost(){
 		$event_code = Input::get('event_code','');
 		$team_members = Input::get('team_members','');
+
+		$team_code = Input::get('team_code','');
+
 
 		$events = Events::with('category')->where('validated','=',1)->where('event_code','=',$event_code)->get(array('event_code','category_id'));
 
@@ -700,6 +745,21 @@ class SoftwareController extends BaseController {
 			$new_team_code = 101;
 		}else{
 			$new_team_code = $existing_team->orderBy('team_code','desc')->first()->team_code + 1;
+		}
+
+		//Manual team codes for PC Desk - blocked events.
+		if(in_array(Auth::manager()->get()->role,[5])){
+			if(!is_numeric($team_code)){
+				Session::flash('error', 'Team Code should be numeric. Eg: 501');
+				return Redirect::route('software_event_registration_new');
+			}
+
+			if($team_code < $new_team_code){
+				Session::flash('error', 'Team Code already exists. Enter a bigger number. ');
+				return Redirect::route('software_event_registration_new');
+			}
+			
+			$new_team_code = $team_code;
 		}
 
 		$team = new Team;

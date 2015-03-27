@@ -39,6 +39,13 @@ New Event Registration
                 </select>
             </div>
 
+            @if(in_array(Auth::manager()->get()->role,[5]))
+            <div class="form-group">
+                <label>Team Code (Number Only, Make sure you do not enter existing codes)</label>
+                <input type="text" class="form-control" name="team_code" required>
+            </div>
+            @endif
+
             <br>
             <button type="submit" class="btn btn-info btn-lg">Create Event Registration <span class="glyphicon glyphicon-chevron-right"></span></button>
         </form>

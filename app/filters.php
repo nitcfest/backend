@@ -72,7 +72,7 @@ Route::filter('role.event_categories', function()
 
 Route::filter('role.events', function()
 {
-	if(!in_array(Auth::manager()->get()->role,[1,3,5,8,21])){
+	if(!in_array(Auth::manager()->get()->role,[1,3,8,21])){
 		return View::make('error_unauthorized');
 	}
 });
@@ -80,7 +80,7 @@ Route::filter('role.events', function()
 
 Route::filter('role.event_edit', function()
 {
-	if(!in_array(Auth::manager()->get()->role,[1,2,3,5,6,8,21])){
+	if(!in_array(Auth::manager()->get()->role,[1,2,3,6,8,21])){
 		return View::make('error_unauthorized');
 	}
 });
@@ -88,7 +88,7 @@ Route::filter('role.event_edit', function()
 
 Route::filter('role.homepage', function()
 {
-	if(!in_array(Auth::manager()->get()->role,[1,3,5,21])){
+	if(!in_array(Auth::manager()->get()->role,[1,3,21])){
 		return View::make('error_unauthorized');
 	}
 });
@@ -103,7 +103,7 @@ Route::filter('role.colleges', function()
 
 Route::filter('role.student_registrations', function()
 {
-	if(!in_array(Auth::manager()->get()->role,[1,3,4,5,6,7,8,21])){
+	if(!in_array(Auth::manager()->get()->role,[1,3,4,6,7,8,21])){
 		return View::make('error_unauthorized');
 	}
 });
@@ -118,19 +118,12 @@ Route::filter('role.hospitality', function()
 });
 
 
-
-Route::filter('role.hospitality', function()
-{
-	if(!in_array(Auth::manager()->get()->role,[3,4,5,21])){
-		return View::make('error_unauthorized');
-	}
-});
 
 
 
 Route::filter('role.software', function()
 {
-	if(!in_array(Auth::manager()->get()->role,[9,10,11,21])){
+	if(!in_array(Auth::manager()->get()->role,[5,9,10,11,21])){
 		return View::make('error_unauthorized');
 	}
 });

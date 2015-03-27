@@ -431,6 +431,12 @@ Route::group(array(
 	    	'uses'=> 'SoftwareController@eventRegistrationDetailsEdit'
 	    	))->where('id', '[0-9]+');
 
+    	Route::get('software/event_registration/{id}/delete', array(
+	    	'before' => 'role.software',
+	    	'as' => 'software_event_registration_delete',
+	    	'uses'=> 'SoftwareController@eventRegistrationDelete'
+	    	))->where('id', '[0-9]+');
+
     	Route::get('software/event_registration/remove_member', array(
 	    	'before' => 'role.software',
 	    	'as' => 'software_event_registration_remove_member',

@@ -117,6 +117,10 @@ class ManageController extends BaseController {
 		if(in_array($manager->role, [12]))
 			return Redirect::route('software_hospitality_manager');
 
+
+		if(in_array($manager->role, [5]))
+			return Redirect::route('software_event_registration');
+
 		$events_count = Events::where('validated','=',true)->count();
 		$managers_count = Manager::where('validated','=',true)->count();
 

@@ -55,9 +55,15 @@ Event Registration Details
 
         @if($team->confirmation == 0 && $team->confirmable == 1)
         	<a href="{{URL::route('software_event_registration_confirm_get')}}?id={{$team->id}}" class="btn btn-lg btn-success"><span class="glyphicon glyphicon-ok"></span> Confirm Event Registration</a>
+        @elseif(in_array(Auth::manager()->get()->role,[11,21])&& $team->confirmation == 0)
+          <a href="{{URL::route('software_event_registration_confirm_get')}}?id={{$team->id}}&force=1" class="btn btn-lg btn-warning"><span class="glyphicon glyphicon-ok"></span> Force Confirm Event Registration</a>
         @endif
         @if($team->confirmation == 0)
           <a href="{{URL::route('software_event_registration_details_edit',$team->id)}}" class="btn btn-lg btn-default"><span class="glyphicon glyphicon-pencil"></span> Edit Team</a>
+        @endif
+
+        @if($team->event->registration_enabled == 0 && $team->confirmation == 0 && in_array(Auth::manager()->get()->role,[5,21]) )
+          <a href="{{URL::route('software_event_registration_delete',$team->id)}}" class="btn btn-lg btn-danger"><span class="glyphicon glyphicon-trash"></span> Delete Team</a>
         @endif
 
 

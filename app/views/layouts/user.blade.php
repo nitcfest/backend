@@ -68,7 +68,7 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        @if(!in_array(Auth::manager()->get()->role,[9,10,11,12]))
+                        @if(!in_array(Auth::manager()->get()->role,[5,9,10,11,12]))
                         <li>
                             <a href="{{ URL::route('manager_dashboard') }}"><i class="fa fa-fw fa-lg fa-dashboard " style="vertical-align: middle;"></i> Dashboard</a>
                         </li>
@@ -92,13 +92,13 @@
                         </li>
                         @endif
 
-                        @if(in_array(Auth::manager()->get()->role,[1,3,5,8,21]))
+                        @if(in_array(Auth::manager()->get()->role,[1,3,8,21]))
                         <li>
                             <a href="{{ URL::route('manager_events') }}"><i class="fa fa-fw fa-lg fa-clock-o" style="vertical-align: middle;"></i> Events</a>
                         </li>
                         @endif
 
-                        @if(in_array(Auth::manager()->get()->role,[1,3,5,21]))
+                        @if(in_array(Auth::manager()->get()->role,[1,3,21]))
                         <li>
                             <a href="{{ URL::route('manager_edit_homepage') }}"><i class="fa fa-fw fa-lg fa-pencil-square-o" style="vertical-align: middle;"></i> Edit Homepage</a>
                         </li>
@@ -112,19 +112,19 @@
                         @endif
 
 
-                        @if(in_array(Auth::manager()->get()->role,[1,3,4,5,6,7,8,21]))
+                        @if(in_array(Auth::manager()->get()->role,[1,3,4,6,7,8,21]))
                         <li>
                             <a href="{{ URL::route('manager_student_registrations') }}"><i class="fa fa-fw fa-lg fa-users" style="vertical-align: middle;"></i> Student Registrations</a>
                         </li>
                         @endif
 
-                        @if(in_array(Auth::manager()->get()->role,[1,3,4,5,6,7,8,21]))
+                        @if(in_array(Auth::manager()->get()->role,[1,3,4,6,7,8,21]))
                         <li>
                             <a href="{{ URL::route('manager_event_registrations') }}"><i class="fa fa-fw fa-lg fa-trophy" style="vertical-align: middle;"></i> Event Registrations</a>
                         </li>
                         @endif
 
-                        @if(in_array(Auth::manager()->get()->role,[3,4,5,21]))
+                        @if(in_array(Auth::manager()->get()->role,[3,4,21]))
                         <li>
                             <a href="{{ URL::route('manager_hospitality') }}"><i class="fa fa-fw fa-lg fa-bed" style="vertical-align: middle;"></i> Hospitality</a>
                         </li>
@@ -173,6 +173,15 @@
 
                         <hr>
 
+                        @endif
+
+                        @if(in_array(Auth::manager()->get()->role,[5]))
+                        <li>
+                            <a href="{{ URL::route('software_event_registration') }}"><i class="fa fa-fw fa-lg fa-trophy" style="vertical-align: middle;"></i> Event Registration</a>
+                        </li>
+                        <li>
+                            <a href="{{ URL::route('software_event_list') }}"><i class="fa fa-fw fa-lg fa-list" style="vertical-align: middle;"></i> Event List</a>
+                        </li>
                         @endif
 
                         @if(in_array(Auth::manager()->get()->role,[12,21]))
