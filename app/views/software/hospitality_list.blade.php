@@ -21,6 +21,11 @@ Hospitality List
 
         <button id="print-btn" class="btn btn-default btn-lg"><span class="glyphicon glyphicon-print"></span> Print</button>
         <br><br>
+        
+        @if($hospitality[0]->checkout == 1)
+        <p>This team has checked out.</p><br>
+        @endif
+
     	<table class="table table-striped table-hover" id="hospitality_table">
     	    <thead>
     	        <tr>
@@ -53,6 +58,11 @@ Hospitality List
     	    </tbody>
     	</table>       
 
+
+        <br>
+        @if($hospitality[0]->checkout == 0)
+        <a href="{{URL::route('software_hospitality_checkout')}}?team_captain={{$team_captain}}" id="checkout-btn" class="btn btn-danger btn-lg"><span class="glyphicon glyphicon-plane"></span> Checkout Team</a>
+        @endif
     </div>
 </div>
 
@@ -64,7 +74,7 @@ Hospitality List
         $('#print-btn').on('click', function(event) {
             event.preventDefault();
 
-            $('#print-btn').hide();
+            $('#print-btn, #checkout-btn').hide();
 
             print();
 

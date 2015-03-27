@@ -982,7 +982,7 @@ class SoftwareController extends BaseController {
 
 		$registrations = Registration::with('hospitality')->where('hospitality_confirm', '=', 1)->get();
 
-		$team_captains = Hospitality::with('registration')->get();
+		$team_captains = Hospitality::with('registration')->groupBy('captain_id')->get();
 
 		return View::make('software.hospitality_manager', ['registrations'=>$registrations, 'team_captains'=>$team_captains]);
 	}
@@ -1077,7 +1077,27 @@ class SoftwareController extends BaseController {
 
 		$hospitality = Hospitality::with('registration.college')->where('captain_id','=',$team_captain)->get();
 		
-		return View::make('software.hospitality_list', array('hospitality'=>$hospitality));
+		return View::make('software.hospitality_list', array('hospitality'=>$hospitality, 'team_captain'=>$team_captain));
+	}
+
+	public function hospitalityCheckout(){
+		$team_captain = Input::get('team_captain');
+
+		$hospitality = Hospitality::where('captain_id','=',$team_captain)->get();
+
+		if($hospitality->count()==0){
+			Session::flash('success', 'Could not checkout team. Try again.');
+			return Redirect::route('software_hospitality_manager');
+		}
+
+		foreach ($hospitality as $item) {
+			$item->checkout = 1;
+			$item->save();
+		}
+
+
+		Session::flash('success', Config::get('app.id_prefix').$team_captain.' and team has checked out.');
+		return Redirect::route('software_hospitality_manager');
 	}
 
 

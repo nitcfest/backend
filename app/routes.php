@@ -550,7 +550,11 @@ Route::group(array(
 	    	'uses'=> 'SoftwareController@hospitalityShowTeam'
 	    	));
 
-
+    	Route::get('software/hospitality/checkout', array(
+	    	'before' => 'role.hospitality_manager',
+	    	'as' => 'software_hospitality_checkout',
+	    	'uses'=> 'SoftwareController@hospitalityCheckout'
+	    	));
 
 
 

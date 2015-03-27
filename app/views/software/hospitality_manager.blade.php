@@ -41,6 +41,7 @@ Hospitality Manager
     	            <th>Team Captain</th>
                     <th>Room</th>
                     <th>Bed</th>
+                    <th>Checkout</th>
     	        </tr>
     	    </thead>
     	    <tbody>
@@ -58,7 +59,8 @@ Hospitality Manager
                        <td>@if($registration->hospitality) {{Config::get('app.id_prefix').$registration->hospitality->captain_id}} @endif</td>
                        <td>@if($registration->hospitality) {{$registration->hospitality->location}} {{$registration->hospitality->room_no}} @endif</td>
                        <td>@if($registration->hospitality) {{$registration->hospitality->bed_no}} @endif</td>
-    	           </tr>
+    	               <td>@if($registration->hospitality) @if($registration->hospitality->checkout == 0) No @else Yes @endif @endif</td>
+                   </tr>
     	        @endforeach
     	    </tbody>
     	</table>
@@ -79,9 +81,18 @@ Hospitality Manager
                     </div>
                     <button type="submit" class="btn btn-info btn-lg">Show Team<span class="glyphicon glyphicon-chevron-right"></span></button>
                 </form>
+
+                <br>
+                @if (Session::get('error'))
+                    <div class="alert alert-error alert-danger">{{ Session::get('error') }}</div>
+                @endif
+
+                @if (Session::get('success'))
+                    <div class="alert alert-success">{{ Session::get('success') }}</div>
+                @endif
+
             </div>
-        </div>
-        
+        </div>        
 
     </div>
 </div>
