@@ -23,7 +23,7 @@ Results
 
         <div class="row">
             <div class="col-md-5">
-                <form action="{{URL::route('software_block_events_do')}}" method="GET" role="form">        
+                <form action="#" method="GET" role="form">        
                     <div class="form-group">
                         <select name="event_code" id="event_select" class="form-control" required="required">
                             <option>-- Select Event --</option>
@@ -41,7 +41,7 @@ Results
 
 
 
-        <form action="" method="POST" role="form">
+        <form action="" method="GET" role="form">
 
             <table class="table table-striped table-hover">
                 <thead>
