@@ -39,3 +39,16 @@ API that provides data for the website front-end. Backend web app for various ma
 6. Update the public path in `bootstrap/paths.php` to point to the `index.php` inside `public_html`.
 
 7. You should be ready to go, and the app will be live.
+
+
+## Suggestions for improvements
+If you're working on improving this, here are a few suggestions.
+
+1. Modify the Edit Homepage section so that all content in the homepage can be managed from the backend.
+2. When signing up managers, change to username instead of email. (This will be easier for them)
+3. The registration software is included in the system. You may hide it initially by editing the side menu in layouts (`user.blade.php`).
+4. Hospitality section can be improved a lot - it was done in a very short timeframe.
+5. There were a few additional features/fixes added on run-time to the Registration Software which are not documented. Look at the commits, and contact the last year's registration coordinators for details.
+6. Results are not yet implemented.
+7. Insert the colleges list from last year to database before you make the site live.
+8. Basic details of user roles are in `ManageController.php` under the function `getRoleName`.
