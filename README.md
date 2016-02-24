@@ -14,7 +14,7 @@ API that provides data for the website front-end. Backend web app for various ma
 
 1. Clone the repository.
 
-2. Run `composer install`. If you don't have composer yet, get it [here](http://getcomposer.com). It will install all the required dependencies.
+2. Run `composer install`. If you don't have composer yet, get it [here](https://getcomposer.org/). It will install all the required dependencies.
 
 3. Fill in configuration details inside the folder`app/config/local`. All the configuration files you need to edit are in this folder.
 
